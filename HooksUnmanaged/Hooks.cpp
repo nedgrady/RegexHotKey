@@ -1,9 +1,19 @@
 #include "Hooks.h"
 
+#ifdef _DEBUG
 const std::string HOOK_DLL_LOCATION = "H:\\Code\\RegexHotKey\\Debug\\Hook.dll";
+#else
+const std::string HOOK_DLL_LOCATION = "H:\\Code\\RegexHotKey\\Release\\Hook.dll";
+#endif
+
 const std::string HOOK_PROC = "HookProc";
 
 std::vector<CharCallback_t> _subscribers = std::vector<CharCallback_t>();
+
+std::map<HSubscriber_t, CharCallback_t> _subscribersMap = std::map<HSubscriber_t, CharCallback_t>();
+
+HHOOK _hook;
+bool _hooked = false;
 
 int main(int argc, char* argv[])
 {
@@ -30,20 +40,18 @@ void __stdcall KeyDown(char c)
 	RaiseKeyFired(c);
 }
 
-extern "C" __declspec(dllexport) bool RegisterRawHandler(CharCallback_t fCharCallback)
+extern "C" __declspec(dllexport) HSubscriber_t RegisterExternalSubscriber(CharCallback_t fCharCallback)
 {
 	if (!fCharCallback)
-		return false;
+		return NULL_CALLBACK;
 
-	return ::CreateHook() && ::AddExternalSubscriber(fCharCallback);
-
+	if(::CreateHook())
+	return ::AddExternalSubscriber(fCharCallback);
 }
 
 bool __stdcall CreateHook()
 {
-	static bool created = false;
-
-	if (created)
+	if (_hooked)
 		return true;
 
 	HMODULE hDll = ::LoadLibrary(HOOK_DLL_LOCATION.c_str());
@@ -73,29 +81,67 @@ bool __stdcall CreateHook()
 	}
 
 
-	HHOOK hHook = SetWindowsHookEx(
+	_hook = SetWindowsHookEx(
 		WH_KEYBOARD_LL,
 		hookProc,
 		hDll,
 		0
 	);
 
-	if (!hHook || GetLastError())
+	if (!_hook || GetLastError())
 	{
 		throw windows_exception(GetLastError(), "Failed To Set Windows Hook");
 		return false;
 	}
-	created = true;
+	_hooked = true;
 	return true;
 }
 
-bool __stdcall AddExternalSubscriber(CharCallback_t fCharCallback)
+HSubscriber_t __stdcall AddExternalSubscriber(CharCallback_t fCharCallback)
+{
+	if (!fCharCallback)
+		return NULL_CALLBACK;
+
+	HSubscriber_t h;
+	do
+	{
+		h = ::NextHandle();
+
+		if (h > MAX_HANDLES)
+			return TOO_MANY_CALLBACKS;
+
+	}
+	while (_subscribersMap.count(h));
+
+	_subscribersMap.insert(CALLBACK_PAIR(h, fCharCallback));
+	_subscribers.push_back(fCharCallback);
+	return h;
+}
+
+extern "C" __declspec(dllexport) bool UnregisterExternalHandler(HSubscriber_t fCharCallback)
 {
 	if (!fCharCallback)
 		return false;
 
-	_subscribers.push_back(fCharCallback);
+	return ::RemoveExternalSubscriber(fCharCallback);
+}
 
+bool __stdcall RemoveExternalSubscriber(HSubscriber_t hSubscriber)
+{
+	//handle not found >:(
+	if (_subscribersMap.count(hSubscriber) < 1)
+		return false;
+
+	_subscribersMap.erase(hSubscriber);
+
+	if(_subscribersMap.empty())
+		RemoveHook();
+}
+
+void __stdcall RemoveHook()
+{
+	if (UnhookWindowsHookEx(_hook))
+		_hooked = false;
 }
 
 void __stdcall RaiseKeyFired(char c)
@@ -104,4 +150,10 @@ void __stdcall RaiseKeyFired(char c)
 	{
 		subscriber(c);
 	}
+}
+
+HSubscriber_t __stdcall NextHandle()
+{
+	static int nCount = 0;
+	return nCount++;
 }
