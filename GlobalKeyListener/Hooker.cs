@@ -7,14 +7,10 @@ namespace GlobalKeyListener
 {
     public delegate void CharCallback(char c);
 
-    internal class Hooker
+    internal sealed class Hooker
         : IDisposable
     {
-        private int _handle = 0;
-
-        readonly object _registerLock = new object();
-        static readonly object externalLock = new object();
-
+        #region DLLImports
         [DllImport("E:\\Code\\PDT\\RegexHotKey\\HooksUnmanaged\\HooksUnmanaged.dll",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern int RegisterExternalSubscriber(IntPtr callback);
@@ -22,28 +18,39 @@ namespace GlobalKeyListener
         [DllImport("E:\\Code\\PDT\\RegexHotKey\\HooksUnmanaged\\HooksUnmanaged.dll",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UnregisterExternalHandler(int charCallback);
+        #endregion
 
-        public event CharCallback KeyDown
+        #region Singleton
+        private static readonly Lazy<Hooker> lazy = new Lazy<Hooker>(() => new Hooker());
+
+        public static Hooker Instance { get { return lazy.Value; } }
+        #endregion
+
+        private readonly object registerLock = new object();
+        private int _handle = 0;
+
+        private Hooker()
+        {
+            RegisterKeyHandler(KeyDownExternal);
+        }
+
+        private CharCallback _keyDown;
+
+        public event CharCallback OnKeyDown
         {
             add
             {
-                lock(_registerLock)
+                lock(registerLock)
                 {
-                    KeyDown += value;
-                    RegisterKeyHandler(value);
+                    _keyDown += value;
                 }
             }
 
             remove
             {
-                lock (_registerLock)
-                {
-                    KeyDown += value;
-                    RemoveKeyHandler();
-                }
+
             }
         }
-
 
         private bool RegisterKeyHandler(CharCallback charCallback)
         {
@@ -56,11 +63,22 @@ namespace GlobalKeyListener
             return true;
         }
 
-        private bool RemoveKeyHandler()
+        private void RemoveKeyHandler()
         {
-
+            UnregisterExternalHandler(_handle);
         }
-/*
+
+        void RaiseKeyDown(char c)
+        {
+            _keyDown?.Invoke(c);
+        }
+
+        private void KeyDownExternal(char c)
+        {
+            RaiseKeyDown(c);
+        }
+
+
         #region IDisposable
 
         private bool _disposed = false;
@@ -72,7 +90,7 @@ namespace GlobalKeyListener
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
+        void Dispose(bool disposing)
         {
             if (!_disposed)
             {
@@ -80,13 +98,13 @@ namespace GlobalKeyListener
                 {
                     // Manual release of managed resources.
                 }
-                UnregisterExternalHandler()
+                UnregisterExternalHandler(_handle);
                 _disposed = true;
             }
         }
 
         ~Hooker() { Dispose(false); }
         #endregion
-        */
+
     }
 }
