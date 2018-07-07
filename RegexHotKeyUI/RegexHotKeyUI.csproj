@@ -36,6 +36,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GlobalKeyListener">
+      <HintPath>..\GlobalKeyListener\bin\Debug\netstandard2.0\GlobalKeyListener.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

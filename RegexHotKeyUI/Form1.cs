@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RegexHotKey;
+using GlobalKeyListener;
+using System.Text.RegularExpressions;
 
 namespace RegexHotKeyUI
 {
@@ -20,8 +21,8 @@ namespace RegexHotKeyUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Hooker h = new Hooker();
-            h.RegisterKey(OnKeyPress, Handle);
+            //Hooker h = new Hooker();
+            //h.RegisterKey(OnKeyPress, Handle);
         }
 
         private IntPtr OnKeyPress(int code, UIntPtr wParam, IntPtr lparam)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using GlobalKeyListener;
 
 namespace RegexHotKeyUI
 {
@@ -24,11 +25,13 @@ namespace RegexHotKeyUI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            GlobalKeyListener.KeyListener k = new KeyListener();
             Application.Run(new Form1());
 
         }
 
-        static void KeyDown(char c)
+        [RegexHandler("^\\S$")]
+        public static void KeyDown(char c)
         {
             Console.WriteLine(c);
         }

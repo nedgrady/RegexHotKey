@@ -11,11 +11,11 @@ namespace GlobalKeyListener
         : IDisposable
     {
         #region DLLImports
-        [DllImport("E:\\Code\\PDT\\RegexHotKey\\HooksUnmanaged\\HooksUnmanaged.dll",
+        [DllImport("H:/Code/RegexHotKey/HooksUnmanaged/HooksUnmanaged.dll",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern int RegisterExternalSubscriber(IntPtr callback);
 
-        [DllImport("E:\\Code\\PDT\\RegexHotKey\\HooksUnmanaged\\HooksUnmanaged.dll",
+        [DllImport("H:/Code/RegexHotKey/HooksUnmanaged/HooksUnmanaged.dll",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UnregisterExternalHandler(int charCallback);
         #endregion
@@ -28,10 +28,11 @@ namespace GlobalKeyListener
 
         private readonly object registerLock = new object();
         private int _handle = 0;
+        private int _subscriberCount = 0;
 
         private Hooker()
         {
-            RegisterKeyHandler(KeyDownExternal);
+            //RegisterKeyHandler();
         }
 
         private CharCallback _keyDown;
@@ -40,22 +41,40 @@ namespace GlobalKeyListener
         {
             add
             {
-                lock(registerLock)
+                if (value == null)
+                    throw new ArgumentNullException("OnKeyDown delegate");
+
+                if (value.Equals(_keyDown)) //sure hope this never happens...
+                    throw new ArgumentException("OnKeyDown delegate is reference to self");
+
+                lock (registerLock)
                 {
+                    if (_subscriberCount == 0)
+                        RegisterKeyHandler();
+                    _subscriberCount++;
                     _keyDown += value;
                 }
             }
 
             remove
             {
+                lock (registerLock)
+                {
+                    _subscriberCount--;
+                    _keyDown -= value;
 
+                    if(_subscriberCount < 1)
+                    {
+                        RemoveKeyHandler();
+                    }
+                }
             }
         }
 
-        private bool RegisterKeyHandler(CharCallback charCallback)
+        private bool RegisterKeyHandler(CharCallback charCallback = null)
         {
             if (charCallback == null)
-                throw new ArgumentNullException("charCallback");
+                charCallback = KeyDownExternal;
 
             IntPtr callback = Marshal.GetFunctionPointerForDelegate(charCallback);
             _handle = RegisterExternalSubscriber(callback);
