@@ -11,7 +11,6 @@ namespace GlobalKeyListener
     public class KeyListener
     {
 
-
         static List<(RegexProcessor, Type)> _subscriberMap
             = new List<(RegexProcessor, Type)>();
 
@@ -19,6 +18,8 @@ namespace GlobalKeyListener
         private static KeysCallback<char[]> charArrCallback;
         private static KeysCallback<IEnumerable<char>> enumerableCharCallback;
         private static KeysCallback<string> stringCallback;
+
+
 
 
         static KeyListener()
@@ -114,14 +115,6 @@ namespace GlobalKeyListener
             {
                 RegexProcessor rp = subscriber.Item1;
                 Type type = subscriber.Item2;
-
-                //switch(subscriber.Value)
-                //{
-                //    case KeysCallback<string> k:
-                //        rp.Add(c, )
-                //        break;
-                //
-                //}
 
                 if (rp.Add(c, out string itemOut, rp.ClearOnMatch))
                 {

@@ -37,7 +37,7 @@ namespace RegexHotKeyUI
             Console.WriteLine(cs);
         }
 
-        //[RegexHandler("^\\S\\S$", CallbackType.String)]
+        [RegexHandler("^\\S\\S$", CallbackType.String)]
         public static void KeyDown(string s)
         {
             Console.WriteLine("KeyDown(string s) \\S\\S$");
