@@ -30,10 +30,18 @@ namespace RegexHotKeyUI
 
         }
 
-        [RegexHandler("^\\S$")]
-        public static void KeyDown(char c)
+        [RegexHandler("^\\d$", CallbackType.CharArray)]
+        public static void KeyDown(char[] cs)
         {
-            Console.WriteLine(c);
+            Console.WriteLine("KeyDown(char[] cs) ^\\d$");
+            Console.WriteLine(cs);
+        }
+
+        //[RegexHandler("^\\S\\S$", CallbackType.String)]
+        public static void KeyDown(string s)
+        {
+            Console.WriteLine("KeyDown(string s) \\S\\S$");
+            Console.WriteLine(s);
         }
     }
 }

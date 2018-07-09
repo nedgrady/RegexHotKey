@@ -5,12 +5,21 @@ using System.Reflection;
 
 namespace GlobalKeyListener
 {
+    public delegate void KeysCallback<T>(T keys)
+        where T : IEnumerable<char>;
+
     public class KeyListener
     {
-       
 
-        static Dictionary<(MethodInfo, RegexHandlerAttribute), CharCallback> _subscriberMap 
-            = new Dictionary<(MethodInfo, RegexHandlerAttribute), CharCallback>();
+
+        static List<(RegexProcessor, Type)> _subscriberMap
+            = new List<(RegexProcessor, Type)>();
+
+        //static Dictionary<Type, Delegate> _delegateMap = new Dictionary<Type, Delegate>();
+        private static KeysCallback<char[]> charArrCallback;
+        private static KeysCallback<IEnumerable<char>> enumerableCharCallback;
+        private static KeysCallback<string> stringCallback;
+
 
         static KeyListener()
         {
@@ -21,6 +30,7 @@ namespace GlobalKeyListener
 
             if (assems?.Count() < 1)
                 return;
+            string s = "";
 
             List<(MethodInfo, RegexHandlerAttribute)> methods = new List<(MethodInfo, RegexHandlerAttribute)>();
             foreach (Assembly ass in assems)
@@ -29,14 +39,44 @@ namespace GlobalKeyListener
                 {
                     foreach((MethodInfo, RegexHandlerAttribute) subscriber in t.GetStaticAttributedMethods<RegexHandlerAttribute>())
                     {
-                        var func = (CharCallback)Delegate.CreateDelegate(typeof(CharCallback), subscriber.Item1);
-                        _subscriberMap.Add(subscriber, func);
+                        RegexHandlerAttribute ra = subscriber.Item2;
+                        //var func = (KeysCallback)Delegate.CreateDelegate(typeof(CharCallback), subscriber.Item1);
+                        //Delegate callback = null;
+                        Type type;
+                        switch (ra.CallbackType)
+                        {
+                            //TODO - this is really quite horrible...
+                            case CallbackType.CharArray:
+                                type = typeof(char[]);
+                                KeysCallback<char[]> charArrCb = (KeysCallback<char[]>)
+                                    Delegate.CreateDelegate(typeof(KeysCallback<char[]>), subscriber.Item1);
 
-                        Hooker.Instance.OnKeyDown += KeyDown;
+                                charArrCallback += charArrCb;
+                                break;
+                            case CallbackType.CharEnumerable:
+                                type = typeof(IEnumerable<char>);
+                                KeysCallback<IEnumerable<char>> charEnumCb = (KeysCallback<IEnumerable<char>>)
+                                    Delegate.CreateDelegate(typeof(KeysCallback<IEnumerable<char>>), subscriber.Item1);
+
+                                enumerableCharCallback += charEnumCb;
+                                break;
+                            case CallbackType.String:
+                                type = typeof(string);
+                                KeysCallback<string> stringCb = (KeysCallback<string>)
+                                    Delegate.CreateDelegate(typeof(KeysCallback<string>), subscriber.Item1);
+
+                            stringCallback += stringCb;
+                                break;
+                            default:
+                                throw new Exception("");
+                        }
+                        
+                        _subscriberMap.Add((new RegexProcessor(ra.Regex, ra.ClearOnMatch, ra.ClearChars), type));
                     }
                 }
             }
 
+            Hooker.Instance.OnKeyDown += KeyDown;
 
             //List the assemblies in the current application domain.
             Console.WriteLine("List of assemblies loaded in current appdomain:");
@@ -69,10 +109,32 @@ namespace GlobalKeyListener
         private static void KeyDown(char c)
         {
             //TODO - Process how each method wants to receive the Key Down, e.g. string, char[] char
+            //TODO - Process the regexes....
             foreach (var subscriber in _subscriberMap)
             {
-                Console.WriteLine("KeyListener.KeyDown");
-                subscriber.Value?.Invoke(c);
+                RegexProcessor rp = subscriber.Item1;
+                Type type = subscriber.Item2;
+
+                //switch(subscriber.Value)
+                //{
+                //    case KeysCallback<string> k:
+                //        rp.Add(c, )
+                //        break;
+                //
+                //}
+
+                if (rp.Add(c, out string itemOut, rp.ClearOnMatch))
+                {
+                    //don't forget string implements IEnumerable<char> =]
+                    if (type == typeof(string) || type == typeof(IEnumerable<char>))
+                    {
+                        stringCallback(itemOut);
+                    }
+                    else if(type == typeof(char[]))
+                    {
+                        charArrCallback(itemOut.ToArray());
+                    }
+                }
             }
         }
     }
