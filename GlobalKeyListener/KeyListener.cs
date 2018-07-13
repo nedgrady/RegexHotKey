@@ -24,14 +24,10 @@ namespace GlobalKeyListener
 
         static KeyListener()
         {
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-
-            IEnumerable<Assembly> assems = currentDomain.GetAttributedAssemblies<KeyDownAttribute>();
-
+            IEnumerable<Assembly> assems = AppDomain.CurrentDomain.GetAttributedAssemblies<KeyDownAttribute>();
 
             if (assems?.Count() < 1)
                 return;
-            string s = "";
 
             List<(MethodInfo, RegexHandlerAttribute)> methods = new List<(MethodInfo, RegexHandlerAttribute)>();
             foreach (Assembly ass in assems)

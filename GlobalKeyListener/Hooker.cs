@@ -30,11 +30,6 @@ namespace GlobalKeyListener
         private int _handle = 0;
         private int _subscriberCount = 0;
 
-        private Hooker()
-        {
-            //RegisterKeyHandler();
-        }
-
         private CharCallback _keyDown;
 
         public event CharCallback OnKeyDown
