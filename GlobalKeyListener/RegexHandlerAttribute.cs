@@ -14,20 +14,25 @@ namespace GlobalKeyListener
         private readonly char[] DEFAULT_WHITESPACE = new char[]{ ' ', '\n', '\r', '\t' };
 
         public Regex Regex => _regex;
-        private Regex _regex;
+        private readonly Regex _regex;
 
         public CallbackType CallbackType => _cbType;
-        private CallbackType _cbType;
+        private readonly CallbackType _cbType;
+
+        public TimeSpan ClearTime => _clearTime;
+        private readonly TimeSpan _clearTime;
 
         public bool ClearOnMatch => _clearOnMatch;
-        private bool _clearOnMatch;
+        private readonly bool _clearOnMatch;
 
         public IEnumerable<char> ClearChars => _clearChars;
-        private char[] _clearChars;
+        private readonly char[] _clearChars;
+
 
         public RegexHandlerAttribute(
             string strRegex,
             CallbackType type,
+            int clearTimeMs = -1,
             char[] clearChars = null,
             bool clearInputOnMatch = true
             )
@@ -40,6 +45,8 @@ namespace GlobalKeyListener
             _regex = new Regex(strRegex);
             _clearOnMatch = clearInputOnMatch;
 
+            clearTimeMs = clearTimeMs < 0 ? int.MaxValue : clearTimeMs;
+            _clearTime = new TimeSpan(0, 0, 0, 0, clearTimeMs);
         }
     }
 }

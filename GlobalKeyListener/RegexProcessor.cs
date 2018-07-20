@@ -13,26 +13,45 @@ namespace GlobalKeyListener
 
         private object matchLock = new object();
         private IEnumerable<char> _clearChars;
+
+        private TimeSpan _clearTime;
         // we can use this bit of global state because StreamProcessor locks between the execution 
         // of Test and Transform, caching the match here means we only have to search the regex once.
         private Match _matchCache;
+        private DateTime _lastTime = DateTime.MaxValue;
 
-        public RegexProcessor(Regex rgx, bool clearStreamOnMatch, IEnumerable<char> clearChars)
+        public RegexProcessor(Regex rgx, TimeSpan clearTime, bool clearStreamOnMatch, IEnumerable<char> clearChars)
             : base(clearStreamOnMatch, clearChars)
         {
             _rgx = rgx ?? throw new ArgumentNullException("rgx");
+
+            _clearTime = clearTime;
 
             _clearChars = clearChars ?? Enumerable.Empty<char>();
         }
 
         protected override bool Test(IEnumerable<char> stream)
         {
-            StringBuilder s = new StringBuilder();
-            foreach (char c in stream)
-                s.Append(c);
+            bool timeout = (DateTime.Now - _lastTime) > _clearTime;
+            string strStream;
+            char last;
+            if(timeout)
+            {
+                Console.WriteLine(timeout);
+                last = stream.Last();
+                strStream = last.ToString();
+                Clear();
+                _stream.Add(last);
+            }
+            else
+            {
+                strStream = stream.GetString();
+            }
+
 
             //Console.WriteLine("Test " + " "+ s.ToString() +  " " + GetHashCode());
-            _matchCache = Regex.Match(stream.GetString());
+            _matchCache = Regex.Match(strStream);
+            _lastTime = DateTime.Now;
             return _matchCache.Success;
         }
 

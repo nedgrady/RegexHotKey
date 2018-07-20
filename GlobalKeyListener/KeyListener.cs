@@ -68,7 +68,7 @@ namespace GlobalKeyListener
                                 throw new Exception("");
                         }
                         
-                        _subscriberMap.Add((new RegexProcessor(ra.Regex, ra.ClearOnMatch, ra.ClearChars), type));
+                        _subscriberMap.Add((new RegexProcessor(ra.Regex, ra.ClearTime, ra.ClearOnMatch, ra.ClearChars), type));
                     }
                 }
             }
