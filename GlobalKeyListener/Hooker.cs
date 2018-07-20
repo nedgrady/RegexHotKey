@@ -53,7 +53,6 @@ namespace GlobalKeyListener
                     _keyDown += value;
                 }
             }
-
             remove
             {
                 lock (registerLock)

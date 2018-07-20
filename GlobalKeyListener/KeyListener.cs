@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace GlobalKeyListener
 {
+    //TODO -- need an individual delegate for each regex instace.. derp
+
     public delegate void KeysCallback<T>(T keys)
         where T : IEnumerable<char>;
 
@@ -15,9 +18,10 @@ namespace GlobalKeyListener
             = new List<(RegexProcessor, Type)>();
 
         //static Dictionary<Type, Delegate> _delegateMap = new Dictionary<Type, Delegate>();
-        private static readonly KeysCallback<char[]> charArrCallback;
-        private static readonly KeysCallback<IEnumerable<char>> enumerableCharCallback;
-        private static readonly KeysCallback<string> stringCallback;
+        private static KeysCallback<char[]> charArrCallback;
+        private static KeysCallback<IEnumerable<char>> enumerableCharCallback;
+        private static KeysCallback<string> stringCallback;
+
 
         static KeyListener()
         {
@@ -29,9 +33,9 @@ namespace GlobalKeyListener
             List<(MethodInfo, RegexHandlerAttribute)> methods = new List<(MethodInfo, RegexHandlerAttribute)>();
             foreach (Assembly ass in assems)
             {
-                foreach(Type t in ass.GetTypes())
+                foreach (Type t in ass.GetTypes())
                 {
-                    foreach((MethodInfo, RegexHandlerAttribute) subscriber in t.GetStaticAttributedMethods<RegexHandlerAttribute>())
+                    foreach ((MethodInfo, RegexHandlerAttribute) subscriber in t.GetStaticAttributedMethods<RegexHandlerAttribute>())
                     {
                         RegexHandlerAttribute ra = subscriber.Item2;
                         //var func = (KeysCallback)Delegate.CreateDelegate(typeof(CharCallback), subscriber.Item1);
@@ -59,12 +63,12 @@ namespace GlobalKeyListener
                                 KeysCallback<string> stringCb = (KeysCallback<string>)
                                     Delegate.CreateDelegate(typeof(KeysCallback<string>), subscriber.Item1);
 
-                            stringCallback += stringCb;
+                                stringCallback += stringCb;
                                 break;
                             default:
                                 throw new Exception("");
                         }
-                        
+
                         _subscriberMap.Add((new RegexProcessor(ra.Regex, ra.ClearTime, ra.ClearOnMatch, ra.ClearChars), type));
                     }
                 }
@@ -78,32 +82,26 @@ namespace GlobalKeyListener
             {
                 Console.WriteLine(assem.ToString());
             }
-                
-        }
-
-        public void Register(object subscriber)
-        {
-            if (subscriber == null)
-                throw new ArgumentNullException("subscriber");
-
-            Register(subscriber.GetType());
 
         }
 
-        public void Register(Type subscriber)
-        {
-            if (subscriber == null)
-                throw new ArgumentNullException("subscriber");
+        //public static bool Register<T>(KeysCallback<T> callback, Regex r, TimeSpan clearTime, bool clearOnmatch, IEnumerable<char> clearChars)
+        //    where T:IEnumerable<char>
+        //{
+        //    if(callback is KeysCallback<char[]>)
+        //    {
+        //        charArrCallback += ((KeysCallback<char[]>)callback);
+        //    }
+        //}
 
-            Assembly ass = subscriber.Assembly;
+        private static void AddDel()
+        {
 
         }
 
 
         private static void KeyDown(char c)
         {
-            //TODO - Process how each method wants to receive the Key Down, e.g. string, char[] char
-            //TODO - Process the regexes....
             foreach (var subscriber in _subscriberMap)
             {
                 RegexProcessor rp = subscriber.Item1;
