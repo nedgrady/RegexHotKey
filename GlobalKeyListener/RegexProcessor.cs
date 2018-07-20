@@ -9,12 +9,12 @@ namespace GlobalKeyListener
         : StreamProcessor<char, string>
     {
         public Regex Regex => _rgx;
-        private Regex _rgx;
+        private readonly Regex _rgx;
 
-        private object matchLock = new object();
-        private IEnumerable<char> _clearChars;
+        private readonly object matchLock = new object();
+        private readonly IEnumerable<char> _clearChars;
 
-        private TimeSpan _clearTime;
+        private readonly TimeSpan _clearTime;
         // we can use this bit of global state because StreamProcessor locks between the execution 
         // of Test and Transform, caching the match here means we only have to search the regex once.
         private Match _matchCache;
@@ -37,7 +37,6 @@ namespace GlobalKeyListener
             char last;
             if(timeout)
             {
-                Console.WriteLine(timeout);
                 last = stream.Last();
                 strStream = last.ToString();
                 Clear();
@@ -48,8 +47,6 @@ namespace GlobalKeyListener
                 strStream = stream.GetString();
             }
 
-
-            //Console.WriteLine("Test " + " "+ s.ToString() +  " " + GetHashCode());
             _matchCache = Regex.Match(strStream);
             _lastTime = DateTime.Now;
             return _matchCache.Success;

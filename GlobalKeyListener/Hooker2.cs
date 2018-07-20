@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using System.IO;
 using System;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
 namespace GlobalKeyListener

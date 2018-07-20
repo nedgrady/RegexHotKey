@@ -10,12 +10,15 @@ namespace GlobalKeyListener
     internal sealed class Hooker
         : IDisposable
     {
+
         #region DLLImports
-        [DllImport("H:/Code/RegexHotKey/HooksUnmanaged/HooksUnmanaged.dll",
+        const string HOOK_PATH = "E:/Code/PDT/RegexHotKey/HooksUnmanaged/HooksUnmanaged.dll";
+
+        [DllImport(HOOK_PATH,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern int RegisterExternalSubscriber(IntPtr callback);
 
-        [DllImport("H:/Code/RegexHotKey/HooksUnmanaged/HooksUnmanaged.dll",
+        [DllImport(HOOK_PATH,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UnregisterExternalHandler(int charCallback);
         #endregion

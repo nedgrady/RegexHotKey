@@ -11,16 +11,13 @@ namespace GlobalKeyListener
     public class KeyListener
     {
 
-        static List<(RegexProcessor, Type)> _subscriberMap
+        static readonly List<(RegexProcessor, Type)> _subscriberMap
             = new List<(RegexProcessor, Type)>();
 
         //static Dictionary<Type, Delegate> _delegateMap = new Dictionary<Type, Delegate>();
-        private static KeysCallback<char[]> charArrCallback;
-        private static KeysCallback<IEnumerable<char>> enumerableCharCallback;
-        private static KeysCallback<string> stringCallback;
-
-
-
+        private static readonly KeysCallback<char[]> charArrCallback;
+        private static readonly KeysCallback<IEnumerable<char>> enumerableCharCallback;
+        private static readonly KeysCallback<string> stringCallback;
 
         static KeyListener()
         {
