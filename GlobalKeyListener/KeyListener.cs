@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-
+using PostSharp.Aspects;
 namespace GlobalKeyListener
 {
     public delegate void KeysCallback<T>(T keys)
@@ -18,7 +18,8 @@ namespace GlobalKeyListener
         private static readonly List<IKeysSubscriber> _keysSubscribers
             = new List<IKeysSubscriber>();
 
-        static KeyListener()
+        [ModuleInitializerAttribute(0)]
+        static void ModuleInitialize()
         {
             IEnumerable<Assembly> assems = AppDomain.CurrentDomain.GetAttributedAssemblies<KeyDownAttribute>();
 

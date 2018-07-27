@@ -25,4 +25,8 @@
     </COMReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="PostSharp" Version="6.0.21" />
+  </ItemGroup>
+
 </Project>
