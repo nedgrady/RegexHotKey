@@ -6,22 +6,17 @@ using System.Text.RegularExpressions;
 
 namespace GlobalKeyListener
 {
-    //TODO -- need an individual delegate for each regex instace.. derp
-
     public delegate void KeysCallback<T>(T keys)
         where T : IEnumerable<char>;
 
     public class KeyListener
     {
-
-        static readonly List<(RegexProcessor, Type)> _subscriberMap
+        #region static_block
+        private static readonly List<(RegexProcessor, Type)> _subscriberMap
             = new List<(RegexProcessor, Type)>();
 
-        //static Dictionary<Type, Delegate> _delegateMap = new Dictionary<Type, Delegate>();
-        private static KeysCallback<char[]> charArrCallback;
-        private static KeysCallback<IEnumerable<char>> enumerableCharCallback;
-        private static KeysCallback<string> stringCallback;
-
+        private static readonly List<IKeysSubscriber> _keysSubscribers
+            = new List<IKeysSubscriber>();
 
         static KeyListener()
         {
@@ -38,38 +33,31 @@ namespace GlobalKeyListener
                     foreach ((MethodInfo, RegexHandlerAttribute) subscriber in t.GetStaticAttributedMethods<RegexHandlerAttribute>())
                     {
                         RegexHandlerAttribute ra = subscriber.Item2;
-                        //var func = (KeysCallback)Delegate.CreateDelegate(typeof(CharCallback), subscriber.Item1);
-                        //Delegate callback = null;
+                        MethodInfo mi = subscriber.Item1;
+
+                        if(mi.GetParameters().Length < 1)
+                        {
+                            //TODO - think of something to do in this case...
+                            Console.WriteLine("Invalid Type Signature");
+                            continue;
+                        }
+                        
                         Type type;
                         switch (ra.CallbackType)
                         {
-                            //TODO - this is really quite horrible...
                             case CallbackType.CharArray:
-                                type = typeof(char[]);
-                                KeysCallback<char[]> charArrCb = (KeysCallback<char[]>)
-                                    Delegate.CreateDelegate(typeof(KeysCallback<char[]>), subscriber.Item1);
-
-                                charArrCallback += charArrCb;
+                                _keysSubscribers.Add(new Subscriber<char[]>(new RegexProcessor(ra.Regex, ra.ClearTime, ra.ClearOnMatch, ra.ClearChars), mi));
                                 break;
                             case CallbackType.CharEnumerable:
-                                type = typeof(IEnumerable<char>);
-                                KeysCallback<IEnumerable<char>> charEnumCb = (KeysCallback<IEnumerable<char>>)
-                                    Delegate.CreateDelegate(typeof(KeysCallback<IEnumerable<char>>), subscriber.Item1);
-
-                                enumerableCharCallback += charEnumCb;
+                                _keysSubscribers.Add(new Subscriber<IEnumerable<char>>(new RegexProcessor(ra.Regex, ra.ClearTime, ra.ClearOnMatch, ra.ClearChars), mi));
                                 break;
                             case CallbackType.String:
-                                type = typeof(string);
-                                KeysCallback<string> stringCb = (KeysCallback<string>)
-                                    Delegate.CreateDelegate(typeof(KeysCallback<string>), subscriber.Item1);
-
-                                stringCallback += stringCb;
+                                _keysSubscribers.Add(new Subscriber<string>(new RegexProcessor(ra.Regex, ra.ClearTime, ra.ClearOnMatch, ra.ClearChars), mi));
                                 break;
                             default:
+                                //TODO - handle this
                                 throw new Exception("");
                         }
-
-                        _subscriberMap.Add((new RegexProcessor(ra.Regex, ra.ClearTime, ra.ClearOnMatch, ra.ClearChars), type));
                     }
                 }
             }
@@ -85,41 +73,17 @@ namespace GlobalKeyListener
 
         }
 
-        //public static bool Register<T>(KeysCallback<T> callback, Regex r, TimeSpan clearTime, bool clearOnmatch, IEnumerable<char> clearChars)
-        //    where T:IEnumerable<char>
-        //{
-        //    if(callback is KeysCallback<char[]>)
-        //    {
-        //        charArrCallback += ((KeysCallback<char[]>)callback);
-        //    }
-        //}
-
-        private static void AddDel()
-        {
-
-        }
-
-
         private static void KeyDown(char c)
         {
-            foreach (var subscriber in _subscriberMap)
+            foreach (var subscriber in _keysSubscribers)
             {
-                RegexProcessor rp = subscriber.Item1;
-                Type type = subscriber.Item2;
-
-                if (rp.Add(c, out string itemOut, rp.ClearOnMatch))
-                {
-                    //don't forget string implements IEnumerable<char> =]
-                    if (type == typeof(string) || type == typeof(IEnumerable<char>))
-                    {
-                        stringCallback(itemOut);
-                    }
-                    else if(type == typeof(char[]))
-                    {
-                        charArrCallback(itemOut.ToArray());
-                    }
-                }
+                subscriber.Notify(c);
             }
         }
+        #endregion
+
+        #region instance_block
+        
+        #endregion
     }
 }

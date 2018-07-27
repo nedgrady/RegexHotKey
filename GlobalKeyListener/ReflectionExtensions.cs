@@ -47,7 +47,7 @@ namespace GlobalKeyListener
         {
 
             IEnumerable<MethodInfo> methods =
-                type.GetMethods();//.Where(m => m.IsStatic);
+                type.GetMethods().Where(m => m.IsStatic);
 
             List<(MethodInfo, T)> list = new List<(MethodInfo, T)>();
 

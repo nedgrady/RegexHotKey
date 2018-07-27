@@ -41,7 +41,7 @@ namespace GlobalKeyListener
             //_transformFunc = transformFunc;
         }
 
-        public bool Add(Tin itemIn, out Tout itemOut, bool clearOnMatch = true)
+        public bool Add(Tin itemIn, out Tout itemOut)
         {
             _stream.Add(itemIn);
 
@@ -51,7 +51,7 @@ namespace GlobalKeyListener
                 {
                     itemOut = Transform(_stream);
 
-                    if (clearOnMatch)
+                    if (ClearOnMatch)
                         Clear();
 
                     return true;
