@@ -11,6 +11,8 @@ namespace RegexHotKey
     public class KeyListener
     {
         #region static_block
+        public static IReadOnlyList<IKeysSubscriber> Subscribers => _keysSubscribers;
+
         private static readonly List<IKeysSubscriber> _keysSubscribers
             = new List<IKeysSubscriber>();
 

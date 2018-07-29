@@ -9,13 +9,13 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-		std::cout << "HooksUnmanaged.dll DLL_PROCESS_ATTACH" << std::endl;
+		//std::cout << "HooksUnmanaged.dll DLL_PROCESS_ATTACH" << std::endl;
 	case DLL_THREAD_ATTACH:
-		std::cout << "HooksUnmanaged.dll DLL_THREAD_ATTACH" << std::endl;
+		//std::cout << "HooksUnmanaged.dll DLL_THREAD_ATTACH" << std::endl;
 	case DLL_THREAD_DETACH:
-		std::cout << "HooksUnmanaged.dll DLL_THREAD_DETACH" << std::endl;
+		//std::cout << "HooksUnmanaged.dll DLL_THREAD_DETACH" << std::endl;
 	case DLL_PROCESS_DETACH:
-		std::cout << "HooksUnmanaged.dll DLL_PROCESS_DETACH" << std::endl;
+		//std::cout << "HooksUnmanaged.dll DLL_PROCESS_DETACH" << std::endl;
 		break;
 	}
 	return TRUE;

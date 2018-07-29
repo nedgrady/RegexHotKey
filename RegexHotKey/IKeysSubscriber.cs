@@ -7,5 +7,8 @@ namespace RegexHotKey
     public interface IKeysSubscriber
     {
         void Notify(char keys);
+
+        RegexProcessor GetRegexProcessor();
+
     }
 }

@@ -20,11 +20,23 @@ namespace RegexHotKeyUI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            KeyListener.Initialize();
+            //KeyListener.Initialize();
 
             //KeysCallback<string> keyListener = ((string keys) => {Console.WriteLine(keys); Console.WriteLine("Anon"); } );
-
             //KeyListener.Register(keyListener, new RegexProcessor(new Regex("^test$")));
+            CommandEmitter.CompileSourceCodeDom(@"
+    using System;
+    using System.IO; 
+    namespace RoslynCompileSample
+    {
+        public static class Matcher
+        {
+            public static void Match(string message)
+            {
+                Console.WriteLine(message);
+            }
+        }
+    }");
             Application.Run(new Form1());
         }
 

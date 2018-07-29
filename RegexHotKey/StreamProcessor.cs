@@ -11,6 +11,7 @@ namespace RegexHotKey
 
         protected List<Tin> _stream = new List<Tin>();
 
+        public IEnumerable<Tin> ClearItems => _clearItems;
         protected IEnumerable<Tin> _clearItems;
 
         private object processingLock = new object();

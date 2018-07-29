@@ -8,8 +8,12 @@ namespace RegexHotKey
     public sealed class Subscriber<T>
                     : IKeysSubscriber where T : IEnumerable<char>
     {
+
         private static KeysCallback<T> _callback;
+
         private readonly RegexProcessor _regexProcessor;
+        public RegexProcessor RegexProcessor => _regexProcessor;
+
 
         public Subscriber(RegexProcessor rgxp, MethodInfo methodInfo)
             : this(rgxp, ToKeysCallback(methodInfo))
@@ -19,6 +23,11 @@ namespace RegexHotKey
         {
             _regexProcessor = rgxp ?? throw new ArgumentNullException("RegexProcessor rgxp");
             _callback = callback ?? throw new ArgumentNullException($"KeysCallback<{typeof(T)}> callback");
+        }
+
+        public override string ToString()
+        {
+            return $"{_regexProcessor.Regex} {GetHashCode()}";
         }
 
         private static KeysCallback<T> ToKeysCallback(MethodInfo methodInfo)
@@ -59,5 +68,8 @@ namespace RegexHotKey
             }
             throw new InvalidCastException("Can't detect the type of the KeysCallback");
         }
+
+        RegexProcessor IKeysSubscriber.GetRegexProcessor() => RegexProcessor;
+
     }
 }
