@@ -11,8 +11,9 @@ typedef bool(*RegisterCallback_t)(CharCallback_t);
 #define NULL_CALLBACK -1
 #define CALLBACK_NOT_FOUND -2
 #define TOO_MANY_CALLBACKS -3
+#define UNABLE_TO_CREATE_HOOK -4
 #define MAX_HANDLES 50
-#define DLL_PATH "E:\\Code\\PDT\\RegexHotKey\\Debug\\Hook.dll"
+#define DLL_PATH "E:\\Code\\RegexHotKey\\Debug\\Hook.dll"
 //Could just avoid using a handle system at all, but that would mean
 //One subscriber couldn't subscribe multiple times...is that even a benefit?
 typedef int HSubscriber_t;

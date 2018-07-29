@@ -5,11 +5,12 @@
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
-    <Authors>Ned Grady</Authors>
+    <Authors></Authors>
     <Company />
-    <Product>GlobalKeyListenerTest01</Product>
+    <Product></Product>
     <Description />
-    <PackageId>GlobalKeyListenerTest01</PackageId>
+    <PackageId></PackageId>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

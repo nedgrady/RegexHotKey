@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GlobalKeyListener;
 using System.Text.RegularExpressions;
 
 namespace RegexHotKeyUI

@@ -1,27 +1,27 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using RegexHotKey;
+using PostSharp.Aspects;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RegexHotKeyUI")]
+[assembly: AssemblyTitle("RegexHotKey")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RegexHotKeyUI")]
+[assembly: AssemblyProduct("RegexHotKey")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: KeyDown]
+
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("2b99e25a-44bd-4f73-9c18-4212de31935e")]
+[assembly: Guid("27d0597d-464d-4e6e-8583-0307609c3240")]
 
 // Version information for an assembly consists of the following four values:
 //

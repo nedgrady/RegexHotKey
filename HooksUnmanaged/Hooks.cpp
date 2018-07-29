@@ -3,7 +3,7 @@
 #ifdef _DEBUG
 const std::string HOOK_DLL_LOCATION = "H:\\Code\\RegexHotKey\\Debug\\Hook.dll";
 #else
-const std::string HOOK_DLL_LOCATION = "H:\\Code\\RegexHotKey\\Release\\Hook.dll";
+const std::string HOOK_DLL_LOCATION = "H:\\Code\\RegexHotKey\\Debug\\Hook.dll";
 #endif
 
 const std::string HOOK_PROC = "HookProc";
@@ -15,11 +15,17 @@ std::map<HSubscriber_t, CharCallback_t> _subscribersMap = std::map<HSubscriber_t
 HHOOK _hook;
 bool _hooked = false;
 
+void __stdcall Test(char c)
+{
+	std::cout << c << std::endl;
+}
+
 int main(int argc, char* argv[])
 {
 	try
 	{
-		CreateHook();
+		::CreateHook();
+		AddExternalSubscriber(Test);
 	}
 	catch (const windows_exception& ex)
 	{
@@ -29,10 +35,10 @@ int main(int argc, char* argv[])
 	MSG message;
 	while (GetMessage(&message, NULL, 0, 0))
 	{
-		TranslateMessage(&message);
-		DispatchMessage(&message);
+		::TranslateMessage(&message);
+		::DispatchMessage(&message);
 	}
-	//UnhookWindowsHookEx(ret);
+	UnhookWindowsHookEx(::_hook);
 }
 
 void __stdcall KeyDown(char c)
@@ -47,6 +53,8 @@ extern "C" __declspec(dllexport) HSubscriber_t RegisterExternalSubscriber(CharCa
 
 	if(::CreateHook())
 	return ::AddExternalSubscriber(fCharCallback);
+
+	return UNABLE_TO_CREATE_HOOK;
 }
 
 bool __stdcall CreateHook()
@@ -80,7 +88,6 @@ bool __stdcall CreateHook()
 		return false;
 	}
 
-
 	_hook = SetWindowsHookEx(
 		WH_KEYBOARD_LL,
 		hookProc,
@@ -109,7 +116,6 @@ HSubscriber_t __stdcall AddExternalSubscriber(CharCallback_t fCharCallback)
 
 		if (h > MAX_HANDLES)
 			return TOO_MANY_CALLBACKS;
-
 	}
 	while (_subscribersMap.count(h));
 
@@ -134,8 +140,12 @@ bool __stdcall RemoveExternalSubscriber(HSubscriber_t hSubscriber)
 
 	_subscribersMap.erase(hSubscriber);
 
-	if(_subscribersMap.empty())
+	if (_subscribersMap.empty())
 		RemoveHook();
+	else
+		return false;
+
+	return true;
 }
 
 void __stdcall RemoveHook()
@@ -156,4 +166,45 @@ HSubscriber_t __stdcall NextHandle()
 {
 	static int nCount = 0;
 	return nCount++;
+}
+
+LRESULT HookProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	if (nCode < 0)
+	{
+		return CallNextHookEx(nullptr, nCode, wParam, lParam);
+	}
+	else if (nCode == HC_ACTION)
+	{
+		if (wParam == WM_KEYDOWN)
+		{
+			LPWORD lpChar = 0;
+
+			BYTE lpKeyState[256];
+			GetKeyboardState(lpKeyState);
+
+			KBDLLHOOKSTRUCT* pKeys = (KBDLLHOOKSTRUCT*)(lParam);
+			//DHOOKSTRUCT* pKeys = (KBDLLHOOKSTRUCT*)(lParam);
+
+			WCHAR pwszBuff[2];
+
+
+			int nChars = ToUnicode(
+				pKeys->vkCode,
+				pKeys->scanCode,
+				lpKeyState,
+				pwszBuff,
+				2,
+				pKeys->flags
+			);
+
+			for (int i = 0; i < nChars; i++)
+			{
+				std :: cout << (pwszBuff[i]);
+			}
+		}
+
+	}
+
+	return CallNextHookEx(nullptr, nCode, wParam, lParam);
 }
