@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using RegexHotKey;
+using System.Reflection;
 
 namespace RegexHotKeyUI
 {
@@ -21,31 +22,43 @@ namespace RegexHotKeyUI
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //KeyListener.Initialize();
-
+            
             //KeysCallback<string> keyListener = ((string keys) => {Console.WriteLine(keys); Console.WriteLine("Anon"); } );
             //KeyListener.Register(keyListener, new RegexProcessor(new Regex("^test$")));
-            CommandEmitter.CompileSourceCodeDom(@"
+            Assembly ass = CommandEmitter.CompileSourceCodeDom(@"
     using System;
-    using System.IO; 
-    namespace RoslynCompileSample
-    {
+    using System.IO;
+    using System.Windows.Forms;
+    using System.Runtime.InteropServices;
+    using System.Text.RegularExpressions;
+
         public static class Matcher
         {
             public static void Match(string message)
             {
                 Console.WriteLine(message);
             }
-        }
+
     }");
+            KeyListener.Initialize();
+            //Delegate subscriber = ass.GetTypes()
+            //    .First(t => t.Name == "Matcher")
+            //.GetMethod("Match")
+            //.CreateDelegate(typeof(KeysCallback<string>));
+            //
+            //KeyListener.Register(
+            //    (KeysCallback<string>)subscriber,
+            //    new RegexProcessor(new Regex("\\S\\S")));
+            //
             Application.Run(new Form1());
         }
 
-        //[RegexHandler("\\S\\S", CallbackType.CharArray, clearChars: default(char[]), clearInputOnMatch: false)]
-        //public static void KeyDown(char[] cs)
-        //{
-        //    Console.WriteLine("KeyDown(char[] cs) ^\\d$");
-        //    Console.WriteLine(cs);
-        //}
+        [RegexHandler("\\S\\S", CallbackType.CharArray, clearChars: default(char[]), clearInputOnMatch: false)]
+        public static void KeyDown(char[] cs)
+        {
+            Console.WriteLine("KeyDown(char[] cs) ^\\d$");
+            Console.WriteLine(cs);
+        }
         //
         //[RegexHandler("^\\S\\S$", CallbackType.CharArray, clearTimeMs: 1000)]
         //public static void KeyDown2(char[] cs)

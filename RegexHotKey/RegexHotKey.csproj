@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionExtensions.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Hooker.cs" />
     <Compile Include="Hooker2.cs" />
     <Compile Include="IKeysSubscriber.cs" />

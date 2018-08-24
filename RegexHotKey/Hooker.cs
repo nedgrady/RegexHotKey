@@ -12,13 +12,11 @@ namespace RegexHotKey
     {
 
         #region DLLImports
-        const string HOOK_PATH = "H:\\Code\\RegexHotKey\\Debug\\HooksUnmanaged.dll";
-
-        [DllImport(HOOK_PATH,
+        [DllImport(Constants.HOOK_PATH,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern int RegisterExternalSubscriber(IntPtr callback);
         
-        [DllImport(HOOK_PATH,
+        [DllImport(Constants.HOOK_PATH,
             CallingConvention = CallingConvention.Cdecl)]
         public static extern bool UnregisterExternalHandler(int charCallback);
         #endregion
@@ -30,7 +28,7 @@ namespace RegexHotKey
         #endregion
 
         private readonly object registerLock = new object();
-        private int _handle = 0;
+        private int _handle = 1;
         private int _subscriberCount = 0;
 
         private CharCallback _keyDown;
@@ -74,8 +72,8 @@ namespace RegexHotKey
                 charCallback = KeyDownExternal;
 
             IntPtr callback = Marshal.GetFunctionPointerForDelegate(charCallback);
+            System.Threading.Thread.Sleep(2000);
             _handle = RegisterExternalSubscriber(callback);
-
             return true;
         }
 

@@ -16,12 +16,12 @@ namespace RegexHotKeyUI
 {
     static class CommandEmitter
     {
+        #region broken
         public static void Execute(string code)
         {
 
 
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(@"
-    using System;
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(@"using System;
 
     namespace RoslynCompileSample
     {
@@ -44,7 +44,9 @@ namespace RegexHotKeyUI
                 assemblyName,
                 syntaxTrees: new[] { syntaxTree },
                 references: references,
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+                options: new CSharpCompilationOptions(
+                     OutputKind.DynamicallyLinkedLibrary
+                     ));
 
             using (var ms = new MemoryStream())
             {
@@ -73,6 +75,7 @@ namespace RegexHotKeyUI
                 }
             }
         }
+        #endregion
 
         public static Assembly CompileSourceCodeDom(string sourceCode)
         {
@@ -82,19 +85,35 @@ namespace RegexHotKeyUI
             var matches = r.Matches(sourceCode);
             foreach(Match m in matches)
             {
-                Console.WriteLine($"{m.Value.Trim().Remove(0, 5).Trim(';')}.dll");
-                cp.ReferencedAssemblies.Add($"{m.Value.Trim().Remove(0, 5).Trim(';')}.dll");
+                cp.ReferencedAssemblies.Add($"{m.Value.Trim().Remove(0, 5).Trim(';').Trim()}.dll");
             }
 
             cp.GenerateExecutable = false;
             CompilerResults cr = cpd.CompileAssemblyFromSource(cp, sourceCode);
 
-            Assembly a = cr.CompiledAssembly;
-            Type fooType = cr.CompiledAssembly.GetType("Matcher");
+            if(cr.Errors.Count < 1)
+            {
+                Console.WriteLine(cr.PathToAssembly);
+                //Console.WriteLine(cr.Output.);
+                Type fooType = cr.CompiledAssembly
+                    .GetTypes()
+                    .First((Type t) => t.Name == "Matcher");
 
-            MethodInfo mi = fooType.GetMethod("Match");
-            mi.Invoke(null, new object[] { "CODE DOM" });
-            return cr.CompiledAssembly;
+                foreach (Type t in cr.CompiledAssembly.GetTypes())
+                    Console.WriteLine(t);
+
+                return cr.CompiledAssembly;
+            }
+            else
+            {
+                foreach(CompilerError error in cr.Errors)
+                {
+                    Console.WriteLine(error.ErrorText);
+                }
+            }
+
+            return null;
         }
+
     }
 }

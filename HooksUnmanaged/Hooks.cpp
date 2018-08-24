@@ -1,11 +1,5 @@
 #include "Hooks.h"
 
-#ifdef _DEBUG
-const std::string HOOK_DLL_LOCATION = "H:\\Code\\RegexHotKey\\Debug\\Hook.dll";
-#else
-const std::string HOOK_DLL_LOCATION = "H:\\Code\\RegexHotKey\\Debug\\Hook.dll";
-#endif
-
 const std::string HOOK_PROC = "HookProc";
 
 std::vector<CharCallback_t> _subscribers = std::vector<CharCallback_t>();
