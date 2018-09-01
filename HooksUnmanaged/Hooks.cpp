@@ -56,7 +56,12 @@ bool __stdcall CreateHook()
 	if (_hooked)
 		return true;
 
+	SetLastError(0);
 	HMODULE hDll = ::LoadLibrary(HOOK_DLL_LOCATION.c_str());
+
+#ifdef _DEBUG
+	std::cout << "hDll: " << hDll << " LastError: " << GetLastError() << " " << GetLastErrorMessage() << std::endl;
+#endif
 
 	if (!hDll || GetLastError())
 	{
@@ -67,6 +72,10 @@ bool __stdcall CreateHook()
 	//remote function that windows will call on mouse input
 	HOOKPROC hookProc = (HOOKPROC)GetProcAddress(hDll, HOOK_PROC.c_str());
 
+#ifdef _DEBUG
+	std::cout << "hookProc: " << hookProc << " LastError: " << GetLastError() << " " << GetLastErrorMessage() << std::endl;
+#endif
+
 	if (!hookProc || GetLastError())
 	{
 		throw proc_address_not_found_exception(HOOK_PROC, HOOK_DLL_LOCATION);
@@ -75,6 +84,10 @@ bool __stdcall CreateHook()
 
 	//register our local callback function, with our remote DLL that is receiving the windows messages.
 	RegisterCallback_t fRegister = (RegisterCallback_t)GetProcAddress(hDll, "Register");
+
+#ifdef _DEBUG
+	std::cout << "fRegister: " << fRegister << " LastError: " << GetLastError() << " " << GetLastErrorMessage() << std::endl;
+#endif
 
 	if (!fRegister(&KeyDown))
 	{
@@ -88,6 +101,10 @@ bool __stdcall CreateHook()
 		hDll,
 		0
 	);
+
+#ifdef _DEBUG
+	std::cout << "_hook: " << _hook << " LastError: " << GetLastError() << " " << GetLastErrorMessage() << std::endl;
+#endif
 
 	if (!_hook || GetLastError())
 	{
