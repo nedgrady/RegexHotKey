@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace RegexHotKey
 {
-    public enum CallbackType
+    static class Helpers
     {
-        String,
-        CharArray,
-        CharEnumerable
+
     }
 }

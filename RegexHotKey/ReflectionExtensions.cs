@@ -10,17 +10,7 @@ namespace RegexHotKey
         public static IEnumerable<Assembly> GetAttributedAssemblies<T>(this AppDomain appDomain)
             where T : Attribute
         {
-            /*return appDomain.GetAssemblies()
-                .Where((ass) =>
-                {
-                    return ass.GetCustomAttributes<T>(typeof(T)) != null;
-                });*/
-
             return appDomain.GetAssemblies().Where((ass) => (ass.GetCustomAttribute<T>() != null));
-
-            /*foreach (Assembly ass in appDomain.GetAssemblies())
-                if (ass.GetCustomAttribute<T>() != null)
-                    yield return ass;*/
         }
 
 
@@ -60,18 +50,9 @@ namespace RegexHotKey
             return list;
         }
 
-        /*public static IEnumerable<(MethodInfo, Attribute)> GetStaticAttributedMethods(this Type type, Type attribute)
-        {
-            return type?
-                .GetAttributedMethods(attribute.GetType())
-                .Where((MethodInfo method) => method.IsStatic);
-        }
-
-        public static IEnumerable<(MethodInfo, Attribute)> GetInstanceAttributedMethods(this Type type, Type attribute)
-        {
-            return type?
-                .GetAttributedMethods(attribute.GetType())
-                .Where((MethodInfo method) => !method.IsStatic);
-        }*/
+        public static string GetParameterString(this MethodInfo methodInfo) =>
+            methodInfo.GetParameters()
+                .Select(pi => $"{pi.ParameterType.Name} {pi.Name}")
+                .Aggregate((s1, s2) => s1 + ", " + s2);
     }
 }

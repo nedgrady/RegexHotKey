@@ -17,15 +17,14 @@ namespace RegexHotKeyUI
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static async Task Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //KeyListener.Initialize();
-            
             //KeysCallback<string> keyListener = ((string keys) => {Console.WriteLine(keys); Console.WriteLine("Anon"); } );
             //KeyListener.Register(keyListener, new RegexProcessor(new Regex("^test$")));
-            Assembly ass = CommandEmitter.CompileSourceCodeDom(@"
+            /*Assembly ass = CommandEmitter.CompileSourceCodeDom(@"
     using System;
     using System.IO;
     using System.Windows.Forms;
@@ -39,8 +38,8 @@ namespace RegexHotKeyUI
                 Console.WriteLine(message);
             }
 
-    }");
-            KeyListener.Initialize();
+    }");*/
+            await KeyListener.Initialize();
             //Delegate subscriber = ass.GetTypes()
             //    .First(t => t.Name == "Matcher")
             //.GetMethod("Match")
@@ -53,7 +52,7 @@ namespace RegexHotKeyUI
             Application.Run(new Form1());
         }
 
-        [RegexHandler("\\S\\S", CallbackType.CharArray, clearChars: default(char[]), clearInputOnMatch: false)]
+        [RegexHandler("\\S\\S", CallbackType.CharEnumerable, clearChars: default(char[]), clearInputOnMatch: false)]
         public static void KeyDown(char[] cs)
         {
             Console.WriteLine("KeyDown(char[] cs) ^\\d$");
