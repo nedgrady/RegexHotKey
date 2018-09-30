@@ -1,3 +1,6 @@
 #include "stdafx.h"
+#pragma once
 
-typedef void(__stdcall *CharCallback_t)(WCHAR c);
+#define INTEROP __stdcall
+
+typedef void(INTEROP *CharCallback)(WCHAR);

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
+using Utilities.Logging;
+
 namespace RegexHotKey
 {
     public class RegexProcessor
@@ -58,7 +60,14 @@ namespace RegexHotKey
         protected override IEnumerable<string> Transform(IEnumerable<char> stream)
         {
             if (_matchCache.Count < 1)
+            {
+                Logger.Instance.LogAsync(LogLevel.Warning, Errors.TRANSFORMING_UNMATHCED_STREAM, (string)stream, _rgx.ToString());
+#if DEBUG
                 throw new Exception("We're trying to traansform on an unmatched regex... this should never happen.....");
+#else
+                yield break;
+#endif
+            }
 
             foreach (Match match in _matchCache)
             {

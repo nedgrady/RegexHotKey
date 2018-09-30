@@ -95,5 +95,14 @@ namespace RegexHotKey {
                 return ResourceManager.GetString("SUBSCRIBER_PARAMETER_TYPE_MISMATCH", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempted to transform {1} while regex {2} returnerned no match..
+        /// </summary>
+        internal static string TRANSFORMING_UNMATHCED_STREAM {
+            get {
+                return ResourceManager.GetString("TRANSFORMING_UNMATHCED_STREAM", resourceCulture);
+            }
+        }
     }
 }

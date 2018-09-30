@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<assemblies>
+  <assembly name="Defaults">
+    <imports>
+      <import>System</import>
+      <import>System.IO</import>
+      <import>System.Windows.Forms</import>
+      <import>System.Runtime.InteropServices</import>
+      <import>System.Text.RegularExpressions</import>
+      <import>RegexHotKey</import>
+    </imports>
+    <subscribers>
+      <subscription methodName="MethodName">
+        <regexHandler>
+          <regex>\\D\\D</regex>
+          <callbackType>String</callbackType>
+          <clearTimeMS>10000</clearTimeMS>
+        </regexHandler>
+        <parameterName>param</parameterName>
+        <code>
+          Console.WriteLine(param);
+        </code>
+      </subscription>
+    </subscribers>
+  </assembly>
+</assemblies>

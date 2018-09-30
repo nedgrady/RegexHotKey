@@ -8,14 +8,23 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 {
 	switch (ul_reason_for_call)
 	{
+
 	case DLL_PROCESS_ATTACH:
-		//std::cout << "HooksUnmanaged.dll DLL_PROCESS_ATTACH" << std::endl;
+#if _DEBUG && VERBOSE_
+		std::cout << "HooksUnmanaged.dll DLL_PROCESS_ATTACH" << std::endl;
+#endif
 	case DLL_THREAD_ATTACH:
-		//std::cout << "HooksUnmanaged.dll DLL_THREAD_ATTACH" << std::endl;
+#if _DEBUG && VERBOSE_
+		std::cout << "HooksUnmanaged.dll DLL_THREAD_ATTACH" << std::endl;
+#endif
 	case DLL_THREAD_DETACH:
-		//std::cout << "HooksUnmanaged.dll DLL_THREAD_DETACH" << std::endl;
+#if _DEBUG && VERBOSE_
+		std::cout << "HooksUnmanaged.dll DLL_THREAD_DETACH" << std::endl;
+#endif
 	case DLL_PROCESS_DETACH:
-		//std::cout << "HooksUnmanaged.dll DLL_PROCESS_DETACH" << std::endl;
+#if _DEBUG && VERBOSE_
+		std::cout << "HooksUnmanaged.dll DLL_PROCESS_DETACH" << std::endl;
+#endif
 		break;
 	}
 	return TRUE;

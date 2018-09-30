@@ -119,6 +119,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="ErrorUtils.cpp" />
     <ClCompile Include="Hooks.cpp" />
+    <ClCompile Include="Hooks_Common.h" />
     <ClCompile Include="ModuleNotLoadedException.cpp" />
     <ClCompile Include="ProcAddressNotFoundException.cpp" />
     <ClCompile Include="WindowsException.cpp" />

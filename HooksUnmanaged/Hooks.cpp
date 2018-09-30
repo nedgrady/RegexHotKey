@@ -2,16 +2,16 @@
 
 const std::string HOOK_PROC = "HookProc";
 
-std::vector<CharCallback_t> _subscribers = std::vector<CharCallback_t>();
+std::vector<CharCallback> _subscribers = std::vector<CharCallback>();
 
-std::map<HSubscriber_t, CharCallback_t> _subscribersMap = std::map<HSubscriber_t, CharCallback_t>();
+std::map<const HSubscriber, const DLLEXPORT CharCallback> _subscribersMap = std::map<const HSubscriber, const DLLEXPORT CharCallback>();
 
 HHOOK _hook;
 bool _hooked = false;
 
-void __stdcall Test(char c)
+void INTEROP Test(const WCHAR c)
 {
-	std::cout << c << std::endl;
+	std::wcout << c << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
 	try
 	{
 		::CreateHook();
+
 		AddExternalSubscriber(Test);
 	}
 	catch (const windows_exception& ex)
@@ -35,12 +36,12 @@ int main(int argc, char* argv[])
 	UnhookWindowsHookEx(::_hook);
 }
 
-void __stdcall KeyDown(char c)
+void INTEROP KeyDown(const WCHAR c)
 {
 	RaiseKeyFired(c);
 }
 
-extern "C" __declspec(dllexport) HSubscriber_t RegisterExternalSubscriber(CharCallback_t fCharCallback)
+extern "C" HSubscriber DLLEXPORT RegisterExternalSubscriber(const CharCallback fCharCallback)
 {
 	if (!fCharCallback)
 		return NULL_CALLBACK;
@@ -51,7 +52,16 @@ extern "C" __declspec(dllexport) HSubscriber_t RegisterExternalSubscriber(CharCa
 	return UNABLE_TO_CREATE_HOOK;
 }
 
-bool __stdcall CreateHook()
+extern "C" bool DLLEXPORT UnregisterExternalHandler(const HSubscriber fCharCallback)
+{
+	if (!fCharCallback)
+		return false;
+
+	return ::RemoveExternalSubscriber(fCharCallback);
+}
+
+
+bool CreateHook()
 {
 	if (_hooked)
 		return true;
@@ -59,7 +69,7 @@ bool __stdcall CreateHook()
 	SetLastError(0);
 	HMODULE hDll = ::LoadLibrary(HOOK_DLL_LOCATION.c_str());
 
-#ifdef _DEBUG
+#if _DEBUG
 	std::cout << "hDll: " << hDll << " LastError: " << GetLastError() << " " << GetLastErrorMessage() << std::endl;
 #endif
 
@@ -72,7 +82,7 @@ bool __stdcall CreateHook()
 	//remote function that windows will call on mouse input
 	HOOKPROC hookProc = (HOOKPROC)GetProcAddress(hDll, HOOK_PROC.c_str());
 
-#ifdef _DEBUG
+#if _DEBUG
 	std::cout << "hookProc: " << hookProc << " LastError: " << GetLastError() << " " << GetLastErrorMessage() << std::endl;
 #endif
 
@@ -83,9 +93,9 @@ bool __stdcall CreateHook()
 	}
 
 	//register our local callback function, with our remote DLL that is receiving the windows messages.
-	RegisterCallback_t fRegister = (RegisterCallback_t)GetProcAddress(hDll, "Register");
+	const RegisterCallback fRegister = (RegisterCallback)GetProcAddress(hDll, "Register");
 
-#ifdef _DEBUG
+#if _DEBUG
 	std::cout << "fRegister: " << fRegister << " LastError: " << GetLastError() << " " << GetLastErrorMessage() << std::endl;
 #endif
 
@@ -102,7 +112,7 @@ bool __stdcall CreateHook()
 		0
 	);
 
-#ifdef _DEBUG
+#if _DEBUG
 	std::cout << "_hook: " << _hook << " LastError: " << GetLastError() << " " << GetLastErrorMessage() << std::endl;
 #endif
 
@@ -115,12 +125,12 @@ bool __stdcall CreateHook()
 	return true;
 }
 
-HSubscriber_t __stdcall AddExternalSubscriber(CharCallback_t fCharCallback)
+HSubscriber AddExternalSubscriber(const CharCallback fCharCallback)
 {
 	if (!fCharCallback)
 		return NULL_CALLBACK;
 
-	HSubscriber_t h;
+	HSubscriber h;
 	do
 	{
 		h = ::NextHandle();
@@ -131,19 +141,11 @@ HSubscriber_t __stdcall AddExternalSubscriber(CharCallback_t fCharCallback)
 	while (_subscribersMap.count(h));
 
 	_subscribersMap.insert(CALLBACK_PAIR(h, fCharCallback));
-	_subscribers.push_back(fCharCallback);
+
 	return h;
 }
 
-extern "C" __declspec(dllexport) bool UnregisterExternalHandler(HSubscriber_t fCharCallback)
-{
-	if (!fCharCallback)
-		return false;
-
-	return ::RemoveExternalSubscriber(fCharCallback);
-}
-
-bool __stdcall RemoveExternalSubscriber(HSubscriber_t hSubscriber)
+bool RemoveExternalSubscriber(const HSubscriber hSubscriber)
 {
 	//handle not found >:(
 	if (_subscribersMap.count(hSubscriber) < 1)
@@ -159,21 +161,21 @@ bool __stdcall RemoveExternalSubscriber(HSubscriber_t hSubscriber)
 	return true;
 }
 
-void __stdcall RemoveHook()
+void RemoveHook()
 {
 	if (UnhookWindowsHookEx(_hook))
 		_hooked = false;
 }
 
-void __stdcall RaiseKeyFired(char c)
+void RaiseKeyFired(const WCHAR c)
 {
-	for (auto subscriber : _subscribers)
+	for (auto subscriberKvp : _subscribersMap)
 	{
-		subscriber(c);
+		subscriberKvp.second(c);
 	}
 }
 
-HSubscriber_t __stdcall NextHandle()
+HSubscriber NextHandle()
 {
 	static int nCount = 0;
 	return nCount++;
@@ -195,10 +197,8 @@ LRESULT HookProc(int nCode, WPARAM wParam, LPARAM lParam)
 			GetKeyboardState(lpKeyState);
 
 			KBDLLHOOKSTRUCT* pKeys = (KBDLLHOOKSTRUCT*)(lParam);
-			//DHOOKSTRUCT* pKeys = (KBDLLHOOKSTRUCT*)(lParam);
 
 			WCHAR pwszBuff[2];
-
 
 			int nChars = ToUnicode(
 				pKeys->vkCode,
@@ -214,7 +214,6 @@ LRESULT HookProc(int nCode, WPARAM wParam, LPARAM lParam)
 				std :: cout << (pwszBuff[i]);
 			}
 		}
-
 	}
 
 	return CallNextHookEx(nullptr, nCode, wParam, lParam);

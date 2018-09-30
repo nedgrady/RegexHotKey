@@ -71,9 +71,16 @@ namespace RegexHotKey
             if (charCallback == null)
                 charCallback = KeyDownExternal;
 
-            IntPtr callback = Marshal.GetFunctionPointerForDelegate(charCallback);
-            System.Threading.Thread.Sleep(2000);
-            _handle = RegisterExternalSubscriber(callback);
+            try
+            {
+                IntPtr callback = Marshal.GetFunctionPointerForDelegate(charCallback);
+                _handle = RegisterExternalSubscriber(callback);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
             return true;
         }
 

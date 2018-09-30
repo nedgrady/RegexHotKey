@@ -16,16 +16,16 @@ namespace RegexHotKey
         #endregion
 
 #if DEBUG
-        LogLevel minLogLevel = LogLevel.Verbose;
+        LogLevel _minLogLevel = LogLevel.Verbose;
 #else
-        LogLevel minLogLevel = LogLevel.Warning;
+        LogLevel _minLogLevel = LogLevel.Warning;
 #endif
 
         private FileLogger _fileLogger;
 
         private Logger()
         {
-            _fileLogger = new FileLogger(filePath: @"TEST.txt", maxLogWait: new TimeSpan(0, 0, 5), sleepInterval: new TimeSpan(0, 0, 5), minLogLevel: minLogLevel);
+            _fileLogger = new FileLogger(filePath: @"RegexHotkeysLogs.txt", maxLogWait: new TimeSpan(0, 0, 5), sleepInterval: new TimeSpan(0, 0, 5), minLogLevel: _minLogLevel);
         }
 
         public async Task LogAsync(LogLevel logLevel, string @string, params string[] replacements)

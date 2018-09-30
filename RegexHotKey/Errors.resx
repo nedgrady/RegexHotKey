@@ -129,4 +129,7 @@
   <data name="SUBSCRIBER_PARAMETER_TYPE_MISMATCH" xml:space="preserve">
     <value>Failed to register method {0}.{1}{2} in assembley {3}. Specified callback type was was {4}.</value>
   </data>
+  <data name="TRANSFORMING_UNMATHCED_STREAM" xml:space="preserve">
+    <value>Attempted to transform {1} while regex {2} returnerned no match.</value>
+  </data>
 </root>
