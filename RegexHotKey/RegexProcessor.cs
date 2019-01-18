@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
-using Utilities.Logging;
+using DontThink.Utilities.Logging;
 
 namespace RegexHotKey
 {
     public class RegexProcessor
-        : StreamProcessor<char, IEnumerable<string>>
+        : StreamProcessor<char, IEnumerable<Match>>
     {
         public static readonly char[] DEFAULT_WHITESPACE =  { ' ', '\n', '\r', '\t' };
 
@@ -24,12 +24,10 @@ namespace RegexHotKey
         private DateTime _lastTime = DateTime.MaxValue;
 
         public RegexProcessor(Regex rgx, TimeSpan? clearTime = null, bool clearStreamOnMatch = true, IEnumerable<char> clearChars = null)
-            : base(clearStreamOnMatch, clearChars)
+            : base(clearStreamOnMatch, clearChars ?? Enumerable.Empty<char>())
         {
+            //TODO - handle null regex here
             _rgx = rgx ?? throw new ArgumentNullException("rgx");
-            
-            //TODO - overrides what the base StreamProcessor does - can i make this cleaner?
-            _clearItems = DEFAULT_WHITESPACE;
 
             //TODO - this is a bit of a hack
             _clearTime = clearTime ?? new TimeSpan(long.MaxValue);
@@ -57,10 +55,11 @@ namespace RegexHotKey
             return _matchCache.Count > 0;
         }
 
-        protected override IEnumerable<string> Transform(IEnumerable<char> stream)
+        protected override IEnumerable<Match> Transform(IEnumerable<char> stream)
         {
             if (_matchCache.Count < 1)
             {
+                //TODO - fix this
                 Logger.Instance.LogAsync(LogLevel.Warning, Errors.TRANSFORMING_UNMATHCED_STREAM, (string)stream, _rgx.ToString());
 #if DEBUG
                 throw new Exception("We're trying to traansform on an unmatched regex... this should never happen.....");
@@ -68,14 +67,15 @@ namespace RegexHotKey
                 yield break;
 #endif
             }
-
-            foreach (Match match in _matchCache)
+            foreach (Match m in _matchCache)
+                yield return m;
+            /*foreach (Match match in _matchCache)
             {
                 foreach(Group g in match.Groups)
                 {
                     yield return g.Value;
                 }
-            }
+            }*/
         }
     }
 }

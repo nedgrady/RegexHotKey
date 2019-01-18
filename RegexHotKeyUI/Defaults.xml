@@ -10,15 +10,26 @@
       <import>RegexHotKey</import>
     </imports>
     <subscribers>
-      <subscription methodName="MethodName">
+      <subscription methodName="xkcd">
         <regexHandler>
-          <regex>\\D\\D</regex>
-          <callbackType>String</callbackType>
+          <regex>^\\d\\s$</regex>
           <clearTimeMS>10000</clearTimeMS>
         </regexHandler>
-        <parameterName>param</parameterName>
         <code>
-          Console.WriteLine(param);
+          //System.Diagnostics.Process.Start("https://xkcd.com/" + param + "/");
+        </code>
+      </subscription>
+      <subscription methodName="Manuscript">
+        <regexHandler>
+          <regex>^(te)(st)$</regex>
+          <clearTimeMS>10000</clearTimeMS>
+        </regexHandler>
+        <code>
+          Console.WriteLine("here");
+          Console.WriteLine(#0);
+          Console.WriteLine(#1);
+          Console.WriteLine(#2);
+          //System.Diagnostics.Process.Start("https://xkcd.com/" + param + "/");
         </code>
       </subscription>
     </subscribers>

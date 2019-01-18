@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Utilities.Logging;
+using DontThink.Utilities.Logging;
 using System.Resources;
+using System.Text.RegularExpressions;
 
 namespace RegexHotKey
 {
-    public delegate void KeysCallback<T>(T keys)
-        where T : IEnumerable<char>;
+    // TODO - add groups to this?
+    public delegate void KeysCallback(Match match);
 
     public class KeyListener
     {
@@ -40,12 +41,12 @@ namespace RegexHotKey
             int count = 0;
             foreach (Type t in ass.GetTypes())
             {
-                foreach ((MethodInfo, RegexHandlerAttribute) subscriber in t.GetStaticAttributedMethods<RegexHandlerAttribute>())
+                foreach ((MethodInfo methodInfo, RegexHandlerAttribute attr) subscriber in t.GetStaticAttributedMethods<RegexHandlerAttribute>())
                 {
                     RegexHandlerAttribute ra = subscriber.Item2;
                     MethodInfo mi = subscriber.Item1;
                     ParameterInfo[] pis = mi.GetParameters();
-                    if (pis.Length != 1 || pis[0].GetType().IsAssignableFrom(typeof(IEnumerable<char>)))
+                    if (pis.Length != 1 || pis[0].GetType().IsAssignableFrom(typeof(Match)))
                     {
 #if DEBUG
                         Console.WriteLine($"Invalid Type Signature");
@@ -54,7 +55,11 @@ namespace RegexHotKey
                         continue;
                     }
 
-                    switch (ra.CallbackType)
+                    _keysSubscribers.Add(new Subscriber(ra.ToRegexProcessor(), mi));
+
+                    //new Subscriber<char[]>(new RegexProcessor(ra.Regex, ra.ClearTime, ra.ClearOnMatch, ra.ClearChars), mi)
+
+                    /*switch (ra.CallbackType)
                     {
                         case CallbackType.CharArray:
                             if (pis[0].ParameterType != typeof(char[]))
@@ -90,7 +95,7 @@ namespace RegexHotKey
 #if DEBUG
 #pragma warning restore CS0162 // Unreachable code detected
 #endif
-                    }
+                    }*/
                     count++;
                 }
             }
@@ -105,10 +110,10 @@ namespace RegexHotKey
             }
         }
 
-        public static IKeysSubscriber Register<T>(KeysCallback<T> callback, RegexProcessor rgxp)
+        public static IKeysSubscriber Register<T>(KeysCallback callback, RegexProcessor rgxp)
             where T : IEnumerable<char>
         {
-            IKeysSubscriber subscriber = new Subscriber<T>(rgxp, callback);
+            IKeysSubscriber subscriber = new Subscriber(rgxp, callback);
             _keysSubscribers.Add(subscriber);
             return subscriber;
         }
@@ -120,8 +125,6 @@ namespace RegexHotKey
         }
 #endregion
 
-#region instance_block
 
-#endregion
     }
 }

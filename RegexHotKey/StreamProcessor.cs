@@ -7,7 +7,7 @@ namespace RegexHotKey
     public abstract class StreamProcessor<Tin, Tout>
         : IProcessor<Tin, Tout>
     {
-        public bool ClearOnMatch { get; set; }
+        public bool ClearOnMatch { get => _clearOnMatch; set => _clearOnMatch = value; }
 
         protected List<Tin> _stream = new List<Tin>();
 
@@ -16,43 +16,37 @@ namespace RegexHotKey
 
         private object processingLock = new object();
 
+        private bool _clearOnMatch;
+
         protected abstract Tout Transform(IEnumerable<Tin> stream);
         protected abstract bool Test(IEnumerable<Tin> stream);
 
-        public StreamProcessor(bool clearStreamOnMatch = true, IEnumerable<Tin> clearItems = null)
+        public StreamProcessor(
+            bool clearStreamOnMatch = true,
+            IEnumerable<Tin> clearItems = null)
         {
-            //if (testFunc == null)
-            //    throw new ArgumentNullException("processFunc");
-            //
-            //if (transformFunc == null)
-            //    throw new ArgumentNullException("transform");
-
-            ClearOnMatch = clearStreamOnMatch;
-
+            _clearOnMatch = clearStreamOnMatch;
             _clearItems = clearItems ?? Enumerable.Empty<Tin>();
-
-            //_testFunc = testFunc;
-            //_transformFunc = transformFunc;
         }
 
         public bool Add(Tin itemIn, out Tout itemOut)
         {
             _stream.Add(itemIn);
 
-            lock(processingLock)
+            lock (processingLock)
             {
                 if (Test(_stream))
                 {
                     itemOut = Transform(_stream);
 
-                    if (ClearOnMatch)
+                    if (_clearOnMatch)
                         Clear();
 
                     return true;
                 }
                 else
                 {
-                     if (_clearItems.Contains(itemIn))
+                    if (_clearItems.Contains(itemIn))
                         Clear();
                 }
             }

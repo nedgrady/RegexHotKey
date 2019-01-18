@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace RegexHotKey
 {
-    public sealed class Subscriber<T>
-                    : IKeysSubscriber where T : IEnumerable<char>
+    public sealed class Subscriber
+                    : IKeysSubscriber
     {
 
-        private static KeysCallback<T> _callback;
+        private static KeysCallback _callback;
 
         private readonly RegexProcessor _regexProcessor;
         public RegexProcessor RegexProcessor => _regexProcessor;
@@ -19,10 +20,10 @@ namespace RegexHotKey
             : this(rgxp, ToKeysCallback(methodInfo))
         { }
 
-        public Subscriber(RegexProcessor rgxp, KeysCallback<T> callback)
+        public Subscriber(RegexProcessor rgxp, KeysCallback callback)
         {
-            _regexProcessor = rgxp ?? throw new ArgumentNullException("RegexProcessor rgxp");
-            _callback = callback ?? throw new ArgumentNullException($"KeysCallback<{typeof(T)}> callback");
+              _regexProcessor = rgxp ?? throw new ArgumentNullException("RegexProcessor rgxp");
+            _callback = callback ?? throw new ArgumentNullException($"KeysCallback callback");
         }
 
         public override string ToString()
@@ -30,43 +31,28 @@ namespace RegexHotKey
             return $"{_regexProcessor.Regex} {GetHashCode()}";
         }
 
-        private static KeysCallback<T> ToKeysCallback(MethodInfo methodInfo)
+        private static KeysCallback ToKeysCallback(MethodInfo methodInfo)
         {
             var parameters = methodInfo.GetParameters();
             if (parameters.Length < 1
-                || parameters[0].ParameterType != typeof(T))
+                || parameters[0].ParameterType != typeof(Match))
             {
                 //TODO -- handle dis
                 throw new Exception();
             }
             else
             {
-                return (KeysCallback<T>)Delegate.CreateDelegate(typeof(KeysCallback<T>), methodInfo);
+                return (KeysCallback)Delegate.CreateDelegate(typeof(KeysCallback), methodInfo);
             }
         }
 
         public void Notify(char key)
         {
-            if(_regexProcessor.Add(key, out IEnumerable<string> itemsOut))
+            if(_regexProcessor.Add(key, out IEnumerable<Match> matchesOut))
             {
-                foreach(string item in itemsOut)
-                {
-                    _callback(ConvertString(item));
-                }
+                foreach(Match m in matchesOut)
+                    _callback(m);
             }
-        }
-
-        private T ConvertString(string s)
-        {
-            if (typeof(T) == typeof(string) || typeof(T) == typeof(IEnumerable<char>))
-            {
-                return(T)(object)s;
-            }
-            else if (typeof(T) == typeof(char[]))
-            {
-                return (T)(object)s.ToCharArray();
-            }
-            throw new InvalidCastException("Can't detect the type of the KeysCallback");
         }
 
         RegexProcessor IKeysSubscriber.GetRegexProcessor() => RegexProcessor;

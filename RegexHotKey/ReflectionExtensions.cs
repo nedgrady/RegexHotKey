@@ -54,5 +54,10 @@ namespace RegexHotKey
             methodInfo.GetParameters()
                 .Select(pi => $"{pi.ParameterType.Name} {pi.Name}")
                 .Aggregate((s1, s2) => s1 + ", " + s2);
+
+        public static RegexProcessor ToRegexProcessor(this RegexHandlerAttribute attr)
+        {
+            return new RegexProcessor(attr.Regex, attr.ClearTime, attr.ClearOnMatch, attr.ClearChars);
+        }
     }
 }

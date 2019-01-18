@@ -15,11 +15,9 @@
 #define UNABLE_TO_CREATE_HOOK -4
 #define MAX_HANDLES 50
 
-
 typedef void(INTEROP *CharCallback)(const WCHAR);
 
 typedef bool(*RegisterCallback)(const CharCallback);
-
 
 //Could just avoid using a handle system at all, but that would mean
 //One subscriber couldn't subscribe multiple times...is that even a benefit?

@@ -1,6 +1,6 @@
 ﻿namespace RegexHotKeyUI
 {
-    partial class Form1
+    partial class MainView
     {
         /// <summary>
         /// Required designer variable.
@@ -29,10 +29,8 @@
         private void InitializeComponent()
         {
             this.subscribersListBox = new System.Windows.Forms.ListBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.propertiesGroupBox = new System.Windows.Forms.GroupBox();
             this.newButton = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.codeTextBox = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.clearCharactersTextBox = new System.Windows.Forms.TextBox();
             this.clearOnMatchRadioButton = new System.Windows.Forms.RadioButton();
@@ -42,7 +40,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.groupBox1.SuspendLayout();
+            this.codePanel = new System.Windows.Forms.Panel();
+            this.propertiesGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.timeoutNumericInput)).BeginInit();
             this.SuspendLayout();
             // 
@@ -51,30 +50,30 @@
             this.subscribersListBox.FormattingEnabled = true;
             this.subscribersListBox.Location = new System.Drawing.Point(12, 12);
             this.subscribersListBox.Name = "subscribersListBox";
-            this.subscribersListBox.Size = new System.Drawing.Size(248, 407);
+            this.subscribersListBox.Size = new System.Drawing.Size(248, 498);
             this.subscribersListBox.TabIndex = 0;
             this.subscribersListBox.SelectedIndexChanged += new System.EventHandler(this.subscribersListBox_SelectedIndexChanged);
             // 
-            // groupBox1
+            // propertiesGroupBox
             // 
-            this.groupBox1.Controls.Add(this.newButton);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.codeTextBox);
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Controls.Add(this.clearCharactersTextBox);
-            this.groupBox1.Controls.Add(this.clearOnMatchRadioButton);
-            this.groupBox1.Controls.Add(this.timeoutNumericInput);
-            this.groupBox1.Controls.Add(this.regexTextBox);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(278, 13);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(468, 406);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Regex Hotkey Properties";
+            this.propertiesGroupBox.Controls.Add(this.codePanel);
+            this.propertiesGroupBox.Controls.Add(this.newButton);
+            this.propertiesGroupBox.Controls.Add(this.button1);
+            this.propertiesGroupBox.Controls.Add(this.clearCharactersTextBox);
+            this.propertiesGroupBox.Controls.Add(this.clearOnMatchRadioButton);
+            this.propertiesGroupBox.Controls.Add(this.timeoutNumericInput);
+            this.propertiesGroupBox.Controls.Add(this.regexTextBox);
+            this.propertiesGroupBox.Controls.Add(this.label4);
+            this.propertiesGroupBox.Controls.Add(this.label3);
+            this.propertiesGroupBox.Controls.Add(this.label2);
+            this.propertiesGroupBox.Controls.Add(this.label1);
+            this.propertiesGroupBox.Location = new System.Drawing.Point(278, 13);
+            this.propertiesGroupBox.Name = "propertiesGroupBox";
+            this.propertiesGroupBox.Size = new System.Drawing.Size(468, 497);
+            this.propertiesGroupBox.TabIndex = 1;
+            this.propertiesGroupBox.TabStop = false;
+            this.propertiesGroupBox.Text = "Regex Hotkey Properties";
+            this.propertiesGroupBox.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // newButton
             // 
@@ -85,23 +84,6 @@
             this.newButton.Text = "New";
             this.newButton.UseVisualStyleBackColor = true;
             this.newButton.Click += new System.EventHandler(this.newButton_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(20, 221);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(35, 13);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "Code:";
-            // 
-            // codeTextBox
-            // 
-            this.codeTextBox.Location = new System.Drawing.Point(61, 194);
-            this.codeTextBox.Multiline = true;
-            this.codeTextBox.Name = "codeTextBox";
-            this.codeTextBox.Size = new System.Drawing.Size(387, 206);
-            this.codeTextBox.TabIndex = 9;
             // 
             // button1
             // 
@@ -180,18 +162,25 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Regex:";
             // 
-            // Form1
+            // codePanel
+            // 
+            this.codePanel.Location = new System.Drawing.Point(6, 184);
+            this.codePanel.Name = "codePanel";
+            this.codePanel.Size = new System.Drawing.Size(456, 307);
+            this.codePanel.TabIndex = 12;
+            // 
+            // MainView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(766, 450);
-            this.Controls.Add(this.groupBox1);
+            this.ClientSize = new System.Drawing.Size(766, 537);
+            this.Controls.Add(this.propertiesGroupBox);
             this.Controls.Add(this.subscribersListBox);
-            this.Name = "Form1";
+            this.Name = "MainView";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.Load += new System.EventHandler(this.MainView_Load);
+            this.propertiesGroupBox.ResumeLayout(false);
+            this.propertiesGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.timeoutNumericInput)).EndInit();
             this.ResumeLayout(false);
 
@@ -200,7 +189,7 @@
         #endregion
 
         private System.Windows.Forms.ListBox subscribersListBox;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox propertiesGroupBox;
         private System.Windows.Forms.TextBox clearCharactersTextBox;
         private System.Windows.Forms.RadioButton clearOnMatchRadioButton;
         private System.Windows.Forms.NumericUpDown timeoutNumericInput;
@@ -209,10 +198,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox codeTextBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button newButton;
+        private System.Windows.Forms.Panel codePanel;
     }
 }
 

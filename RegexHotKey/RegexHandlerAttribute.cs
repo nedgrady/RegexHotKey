@@ -14,9 +14,6 @@ namespace RegexHotKey
         public Regex Regex => _regex;
         private readonly Regex _regex;
 
-        public CallbackType CallbackType => _cbType;
-        private readonly CallbackType _cbType;
-
         public TimeSpan ClearTime => _clearTime;
         private readonly TimeSpan _clearTime;
 
@@ -29,7 +26,6 @@ namespace RegexHotKey
 
         public RegexHandlerAttribute(
             string strRegex,
-            CallbackType type,
             int clearTimeMs = -1,
             char[] clearChars = null,
             bool clearInputOnMatch = true
@@ -39,7 +35,6 @@ namespace RegexHotKey
                 throw new ArgumentNullException("strRegex");
 
             _clearChars = clearChars ?? RegexProcessor.DEFAULT_WHITESPACE;
-            _cbType = type;
             _regex = new Regex(strRegex);
             _clearOnMatch = clearInputOnMatch;
 

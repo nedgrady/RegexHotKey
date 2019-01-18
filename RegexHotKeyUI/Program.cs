@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using System.Text;
+using DontThink.Utilities.Logging;
 
 namespace RegexHotKeyUI
 {
@@ -28,13 +29,10 @@ namespace RegexHotKeyUI
             XElement xDefaults = XElement.Load("../../Defaults.xml");
 
             StringBuilder builder = new StringBuilder();
-
+            Regex groupsReplaceRegex = new Regex(@"(#)(\d{0,4})");
             foreach (XElement xAssembly in xDefaults.Nodes())
             {
                 builder.Clear();
-                /*string imports = (xAssembly.Elements()
-                    .Where(xEl => xEl.Name == "imports")
-                    .Select(xImport => $"using {xImport.Value};\n")*/
 
                 builder.Append(
                     xAssembly.GetElementsByName("imports")
@@ -51,56 +49,51 @@ namespace RegexHotKeyUI
                     XElement xRegexHandler = xSubscription.Element("regexHandler");
 
                     XElement xRegex = xRegexHandler.Element("regex");
-                    XElement xCallbackType = xRegexHandler.Element("callbackType");
                     XElement xClearTimeMS = xRegexHandler.Element("clearTimeMS");
                     XElement xParameterName = xSubscription.Element("parameterName");
                     XElement xCode = xSubscription.Element("code");
 
                     builder.AppendLine(
-                        $@"[RegexHandler(""{ xRegex.Value }"", CallbackType.{xCallbackType.Value}, clearChars: default(char[]), clearInputOnMatch: true, clearTimeMs: {xClearTimeMS?.Value ?? "-1"})]");
+                        $@"[RegexHandler(""{ xRegex.Value }"",  clearChars: default(char[]), clearInputOnMatch: true, clearTimeMs: {xClearTimeMS?.Value ?? "-1"})]");
 
-                    builder.AppendLine($@"public static void @{ xSubscription.FirstAttribute.Value } ({xCallbackType.Value.ToCallbackTypeName()} {xParameterName.Value}) {{");
-                    builder.AppendLine(xCode.Value);
+                    builder.AppendLine($@"public static void @{ xSubscription.FirstAttribute.Value } (Match @match) {{");
+
+                    builder.AppendLine(groupsReplaceRegex.Replace(xCode.Value, RegexReplace));
                     builder.AppendLine("}");
-
                 }
 
                 builder.Append("}}");
-                Assembly ass2 = CommandEmitter.CompileSourceCodeDom(builder.ToString(), assName);
+#if DEBUG
+                await Logger.Instance.LogAsync(LogLevel.Verbose, builder.ToString());
+#endif
+
+                Assembly ass2 = await SubscriberCompiler.CompileSubscribingAssembly(builder.ToString(), assName);
                 await KeyListener.RegisterAssembly(ass2);
                 builder.Clear();
             }
-            Console.WriteLine(builder);
-            //KeyListener.Initialize();
-            //KeysCallback<string> keyListener = ((string keys) => {Console.WriteLine(keys); Console.WriteLine("Anon"); } );
-            //KeyListener.Register(keyListener, new RegexProcessor(new Regex("^test$")));
-            Assembly ass = CommandEmitter.CompileSourceCodeDom(@"
-    using System;
-    using System.IO;
-    using System.Windows.Forms;
-    using System.Runtime.InteropServices;
-    using System.Text.RegularExpressions;
-    using RegexHotKey;
-        public static class Matcher
-        {
-            [RegexHandler(""\\D\\D"", CallbackType.String, clearChars: default(char[]), clearInputOnMatch: true)]
-            public static void KeyDown(string s)
-            {
-                Console.WriteLine(""\\D\\D"");
-                Console.WriteLine(s);
-            }
 
-        }");
             await KeyListener.Initialize();
             
-            Application.Run(new Form1());
+            Application.Run(new MainView());
         }
 
-        [RegexHandler("\\S\\S", CallbackType.CharArray, clearChars: default, clearInputOnMatch: true)]
-        public static void KeyDown(char[] cs)
+        private static string RegexReplace(Match @match)
         {
-            Console.WriteLine("KeyDown(char[] cs) ^\\d$");
+            int x = @match?.Groups.Count ?? 1;
+
+
+            string grpIndex = match.Groups[2].Value;
+            return $@"@match.Groups[{grpIndex}].Value";
+            // TODO - why can't i use conditional member access operator?????.
+            return $@"(((match != null) ? match.Groups.Count : int.MaxValue) > {grpIndex} ? null : @match.Groups[{grpIndex}].Value) ?? 
+                        ""Group {grpIndex} out of range""";
+        }
+
+       // [RegexHandler("^test$", clearChars: default, clearInputOnMatch: true, clearTimeMs: 500)]
+        public static void KeyDown(Match cs)
+        {
             Console.WriteLine(cs);
+            //System.Diagnostics.Process.Start($"https://xkcd.com/{cs.TrimStart('x')}/");
         }
 
     }

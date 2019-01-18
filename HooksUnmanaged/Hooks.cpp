@@ -60,7 +60,6 @@ extern "C" bool DLLEXPORT UnregisterExternalHandler(const HSubscriber fCharCallb
 	return ::RemoveExternalSubscriber(fCharCallback);
 }
 
-
 bool CreateHook()
 {
 	if (_hooked)

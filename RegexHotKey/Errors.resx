@@ -123,6 +123,9 @@
   <data name="METHOD_SIGNATURE_INVALID" xml:space="preserve">
     <value>Failed to register method {0}.{1}{2}  in assembly {3}. Expected 1 parameter impleneting interface IEnumerable&lt;char&gt;.</value>
   </data>
+  <data name="NULL_ARGUMENT" xml:space="preserve">
+    <value />
+  </data>
   <data name="NULL_ITEM_LOGGED" xml:space="preserve">
     <value>Failed to log null item parameter name: {0}</value>
   </data>

@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;VERBOSE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -34,6 +34,34 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DontThink.Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\RegexHotKeyUI\bin\Debug\DontThink.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="DontThink.Utilities.Compilation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\DontThink.Utilities.Compilation.dll</HintPath>
+    </Reference>
+    <Reference Include="DontThink.Utilities.Concurrency, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\DontThink.Utilities.Concurrency.dll</HintPath>
+    </Reference>
+    <Reference Include="DontThink.Utilities.Database, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\DontThink.Utilities.Database.dll</HintPath>
+    </Reference>
+    <Reference Include="DontThink.Utilities.Debugging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\DontThink.Utilities.Debugging.dll</HintPath>
+    </Reference>
+    <Reference Include="DontThink.Utilities.IO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\DontThink.Utilities.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="DontThink.Utilities.Logging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\RegexHotKeyUI\bin\Debug\DontThink.Utilities.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="PostSharp, Version=6.0.21.0, Culture=neutral, PublicKeyToken=b13fd38b8f9c99d7, processorArchitecture=MSIL">
       <HintPath>..\packages\PostSharp.Redist.6.0.21\lib\net45\PostSharp.dll</HintPath>
     </Reference>
@@ -45,22 +73,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Utilites.Logger, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Utilites.Logger.dll</HintPath>
-    </Reference>
-    <Reference Include="Utilities.Concurrency, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Utilities.Concurrency.dll</HintPath>
-    </Reference>
-    <Reference Include="Utilities.Debugging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Utilities.Debugging.dll</HintPath>
-    </Reference>
-    <Reference Include="Utilities.IO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Utilities.IO.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionExtensions.cs" />
@@ -85,7 +97,6 @@
     <Compile Include="StreamProcessor.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Subscriber.cs" />
-    <Compile Include="CallbackType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

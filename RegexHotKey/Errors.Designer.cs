@@ -79,6 +79,15 @@ namespace RegexHotKey {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string NULL_ARGUMENT {
+            get {
+                return ResourceManager.GetString("NULL_ARGUMENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to log null item parameter name: {0}.
         /// </summary>
         internal static string NULL_ITEM_LOGGED {
