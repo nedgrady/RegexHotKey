@@ -91,12 +91,13 @@ namespace RegexHotKey
             await LogAsync(logLevel, ex.StackTrace);
         }
 
-        public async Task ThrowOrLogNullArgument(object parameter, string paramName, LogLevel logLevel = LogLevel.Error)
+        public async Task<bool> ThrowOrLogNullArgument(object parameter, string paramName, LogLevel logLevel = LogLevel.Error)
         {
-            if (parameter == null)
-            {
-                await ThrowOrLogException(new ArgumentNullException(paramName ?? ""), logLevel);
-            }
+            if (parameter != null)
+                return false;
+
+            await ThrowOrLogException(new ArgumentNullException(paramName ?? ""), logLevel);
+            return true;
         }
 
         ~Logger()

@@ -121,7 +121,7 @@
     <value>Failed to register subscriber  {0}.{1}{2}  in assembly {3}. The specified callback type was {4}.</value>
   </data>
   <data name="METHOD_SIGNATURE_INVALID" xml:space="preserve">
-    <value>Failed to register method {0}.{1}{2}  in assembly {3}. Expected 1 parameter impleneting interface IEnumerable&lt;char&gt;.</value>
+    <value>Failed to register method {0}.{1}{2}  in assembly {3}. Expected 1 parameter of type System.Text.Match.</value>
   </data>
   <data name="NULL_ARGUMENT" xml:space="preserve">
     <value />

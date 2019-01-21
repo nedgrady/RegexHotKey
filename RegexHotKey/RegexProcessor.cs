@@ -17,6 +17,7 @@ namespace RegexHotKey
 
         private readonly object matchLock = new object();
 
+        public TimeSpan ClearTime => _clearTime;
         private readonly TimeSpan _clearTime;
         // we can use this bit of global state because StreamProcessor locks between the execution 
         // of Test and Transform, caching the match here means we only have to search the regex once.

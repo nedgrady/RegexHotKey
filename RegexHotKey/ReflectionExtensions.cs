@@ -59,5 +59,27 @@ namespace RegexHotKey
         {
             return new RegexProcessor(attr.Regex, attr.ClearTime, attr.ClearOnMatch, attr.ClearChars);
         }
+
+        public static bool TryGetKeyDownGuid(this Assembly ass, out Guid guid)
+        {
+            KeyDownAttribute attribute = ass?.GetCustomAttribute<KeyDownAttribute>();
+
+            if (attribute == null)
+            {
+                guid = Guid.Empty;
+                return false;
+            }
+
+            guid = attribute.KeyDownGUID;
+            return true;
+        }
+
+        public static Guid GetKeyDownGuid(this Assembly ass)
+        {
+            if (!ass.TryGetKeyDownGuid(out Guid g))
+                return Guid.Empty;
+
+            return g;
+        }
     }
 }

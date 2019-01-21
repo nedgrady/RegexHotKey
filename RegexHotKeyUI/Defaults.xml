@@ -16,20 +16,16 @@
           <clearTimeMS>10000</clearTimeMS>
         </regexHandler>
         <code>
-          //System.Diagnostics.Process.Start("https://xkcd.com/" + param + "/");
+          //GotoURL(#0);
         </code>
       </subscription>
       <subscription methodName="Manuscript">
         <regexHandler>
-          <regex>^(te)(st)$</regex>
+          <regex>(!c)(\\d{1,4}$)</regex>
           <clearTimeMS>10000</clearTimeMS>
         </regexHandler>
         <code>
-          Console.WriteLine("here");
-          Console.WriteLine(#0);
-          Console.WriteLine(#1);
-          Console.WriteLine(#2);
-          //System.Diagnostics.Process.Start("https://xkcd.com/" + param + "/");
+          RegexHotKey.StandardLibrary.Apps.GotoURL("http://www.manuscript.com/cases/f/" + #2);
         </code>
       </subscription>
     </subscribers>

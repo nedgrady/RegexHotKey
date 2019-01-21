@@ -11,7 +11,9 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text;
 using DontThink.Utilities.Logging;
-
+using RegexHotKey.StandardLibrary;
+using Microsoft.CodeAnalysis.CSharp;
+[assembly: KeyDown("2a1287b2-9e03-4b0c-861d-b1a48774b807")]
 namespace RegexHotKeyUI
 {
     static class Program
@@ -33,6 +35,8 @@ namespace RegexHotKeyUI
             foreach (XElement xAssembly in xDefaults.Nodes())
             {
                 builder.Clear();
+
+                builder.AppendLine("using RegexHotKey.StandardLibrary;");
 
                 builder.Append(
                     xAssembly.GetElementsByName("imports")
@@ -63,6 +67,8 @@ namespace RegexHotKeyUI
                 }
 
                 builder.Append("}}");
+
+                
 #if DEBUG
                 await Logger.Instance.LogAsync(LogLevel.Verbose, builder.ToString());
 #endif
@@ -89,11 +95,11 @@ namespace RegexHotKeyUI
                         ""Group {grpIndex} out of range""";
         }
 
-       // [RegexHandler("^test$", clearChars: default, clearInputOnMatch: true, clearTimeMs: 500)]
+        [RegexHandler("^(!c)(\\d{5})$", clearChars: default, clearInputOnMatch: true, clearTimeMs: 500)]
         public static void KeyDown(Match cs)
         {
             Console.WriteLine(cs);
-            //System.Diagnostics.Process.Start($"https://xkcd.com/{cs.TrimStart('x')}/");
+            Apps.GotoURL("http://www.manuscript.com/cases/f/" + cs.Groups[2]);
         }
 
     }

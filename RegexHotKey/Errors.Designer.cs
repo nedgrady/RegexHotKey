@@ -70,7 +70,7 @@ namespace RegexHotKey {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to register method {0}.{1}{2}  in assembly {3}. Expected 1 parameter impleneting interface IEnumerable&lt;char&gt;..
+        ///   Looks up a localized string similar to Failed to register method {0}.{1}{2}  in assembly {3}. Expected 1 parameter of type System.Text.Match..
         /// </summary>
         internal static string METHOD_SIGNATURE_INVALID {
             get {

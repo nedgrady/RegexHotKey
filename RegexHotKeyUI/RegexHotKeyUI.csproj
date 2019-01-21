@@ -233,6 +233,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RegexHotKey.StandardLibrary\RegexHotKey.StandardLibrary.csproj">
+      <Project>{8a23bd79-2238-4542-978b-411ea71f9708}</Project>
+      <Name>RegexHotKey.StandardLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RegexHotKey\RegexHotKey.csproj">
       <Project>{27d0597d-464d-4e6e-8583-0307609c3240}</Project>
       <Name>RegexHotKey</Name>

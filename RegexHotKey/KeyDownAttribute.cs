@@ -8,6 +8,15 @@ namespace RegexHotKey
     public class KeyDownAttribute
         : Attribute
     {
+        public Guid KeyDownGUID => _guid;
+        private Guid _guid;
+        public KeyDownAttribute(string guid)
+        {
+            if (!Guid.TryParse(guid, out Guid g))
+                throw new ArgumentOutOfRangeException("guid");
 
+            _guid = g;
+
+        }
     }
 }
